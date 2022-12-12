@@ -5,17 +5,14 @@ export class CreateRoles1661161731016 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            CREATE TABLE \`roles\` (
-                \`id\` bigint NOT NULL AUTO_INCREMENT,
-                \`name\` varchar(255) NOT NULL,
-                \`type\` enum ('1', '2', '3', '4') NOT NULL,
-                \`created_by\` int NULL,
-                \`created_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-                \`updated_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-                \`deleted_at\` timestamp(6) NULL,
-                UNIQUE INDEX \`IDX_648e3f5447f725579d7d4ffdfb\` (\`name\`),
-                PRIMARY KEY (\`id\`)
-            ) ENGINE = InnoDB
+        CREATE TABLE public.roles (
+        id serial4 NOT NULL,
+        "name" varchar(255) NOT NULL,
+        "type" public.roles_type_enum NOT NULL,
+        created_by int8 NULL,
+        CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY (id),
+        CONSTRAINT "UQ_648e3f5447f725579d7d4ffdfb7" UNIQUE (name)
+    );
         `);
     await queryRunner.query(`
             CREATE TABLE \`role_permission\` (
