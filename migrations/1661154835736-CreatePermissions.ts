@@ -16,10 +16,10 @@ export class CreatePermissions1661154835736 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            DROP INDEX \`IDX_48ce552495d14eae9b187bb671\` ON \`permissions\`
+            DROP INDEX \"IDX_48ce552495d14eae9b187bb671\" ON \"permissions\"
         `);
     await queryRunner.query(`
-            DROP TABLE \`permissions\`
+            DROP TABLE \"permissions\"
         `);
   }
 }

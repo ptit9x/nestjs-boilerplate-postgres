@@ -26,21 +26,17 @@ export class CreateUser1661224228702 implements MigrationInterface {
         CONSTRAINT "FK_fb2e442d14add3cefbdf33c4561" FOREIGN KEY (role_id) REFERENCES public.roles(id)
     );
         `);
-    await queryRunner.query(`
-            ALTER TABLE \`user\`
-            ADD CONSTRAINT \`FK_fb2e442d14add3cefbdf33c4561\` FOREIGN KEY (\`role_id\`) REFERENCES \`roles\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION
-        `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            ALTER TABLE \`user\` DROP FOREIGN KEY \`FK_fb2e442d14add3cefbdf33c4561\`
+            ALTER TABLE \"user\" DROP FOREIGN KEY \"FK_fb2e442d14add3cefbdf33c4561\"
         `);
     await queryRunner.query(`
-            DROP INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\` ON \`user\`
+            DROP INDEX \"IDX_e12875dfb3b1d92d7d7c5377e2\" ON \"user\"
         `);
     await queryRunner.query(`
-            DROP TABLE \`user\`
+            DROP TABLE \"user\"
         `);
   }
 }
