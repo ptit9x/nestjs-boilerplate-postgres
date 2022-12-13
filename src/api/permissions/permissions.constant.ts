@@ -1,5 +1,5 @@
 export const PERMISSION_CONST = {
-  MODEL_NAME: 'permissions',
+  MODEL_NAME: 'permission',
   MODEL_PROVIDER: 'PERMISSIONS_MODEL',
 };
 

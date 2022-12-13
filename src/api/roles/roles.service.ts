@@ -1,7 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { FindManyOptions } from 'typeorm';
+import { type } from 'os';
+import { FindManyOptions, In } from 'typeorm';
 import { PermissionsService } from '../permissions/permissions.service';
-import { RolesPermissionService } from '../role-permission/role-permission.service';
+import { RoleEntity } from './entities/role.entity';
 import { ROLES_DEFAULT, RoleTypes } from './roles.constant';
 import { RolesRepository } from './roles.repository';
 
@@ -10,39 +11,29 @@ export class RolesService implements OnModuleInit {
   constructor(
     private readonly rolesRepossitory: RolesRepository,
     private readonly permissionService: PermissionsService,
-    private readonly rolePermissionService: RolesPermissionService,
   ) {}
 
   async onModuleInit() {
     const rolesListExisted = await this.rolesRepossitory.findExistedRecord();
-    if (rolesListExisted.length) return;
+    if (rolesListExisted?.length) return;
 
-    ROLES_DEFAULT.forEach(async (role) => {
+    for (const role of ROLES_DEFAULT) {
       const roleExisted = await this.rolesRepossitory.findOneByCondition({
         where: { name: role.name },
       });
       if (!roleExisted) {
-        const roleCreated = await this.rolesRepossitory.save({
-          name: role.name,
-          type: role.type,
+        const permissions = await this.permissionService.find({
+          where: {
+            name: In(role.permissions),
+          },
         });
-
-        role.permissions.forEach(async (permissionName) => {
-          const permissionFound =
-            await this.permissionService.findOneByConditions({
-              where: {
-                name: permissionName,
-              },
-            });
-          if (permissionFound) {
-            this.rolePermissionService.create({
-              permission_id: permissionFound.id,
-              role_id: roleCreated.id,
-            });
-          }
-        });
+        const rModel = new RoleEntity();
+        rModel.name = role.name;
+        rModel.type = role.type;
+        rModel.permissions = permissions;
+        await this.rolesRepossitory.save(rModel);
       }
-    });
+    }
   }
 
   public async findAdminRole() {
@@ -57,7 +48,7 @@ export class RolesService implements OnModuleInit {
     });
   }
 
-  public async findAllByConditions(conditions: FindManyOptions) {
+  public findAllByConditions(conditions: FindManyOptions) {
     return this.rolesRepossitory.repository.find(conditions);
   }
 }

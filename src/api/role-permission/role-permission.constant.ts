@@ -1,4 +1,0 @@
-export const ROLE_PERMISION_CONST = {
-  MODEL_NAME: 'role_permission',
-  MODEL_PROVIDER: 'ROLE_PERMISSION_MODEL',
-};

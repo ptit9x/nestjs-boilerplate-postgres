@@ -48,7 +48,10 @@ export class UserController {
   @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
   @Patch('change-password')
   @HttpCode(HttpStatus.OK)
-  changeAdminPassword(@GetUser() user: IAdminPayload, @Body() changeAdminPasswordDto: ChangeUserPasswordDto) {
+  changeAdminPassword(
+    @GetUser() user: IAdminPayload,
+    @Body() changeAdminPasswordDto: ChangeUserPasswordDto,
+  ) {
     return this.userService.changePassword(user.sub, changeAdminPasswordDto);
   }
 
@@ -56,7 +59,10 @@ export class UserController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(PermissionsGuard)
-  public async updateUser(@Param() params: { id: number }, @Body() updateDto: UpdateUserDto): Promise<any> {
+  public async updateUser(
+    @Param() params: { id: number },
+    @Body() updateDto: UpdateUserDto,
+  ): Promise<any> {
     return this.userService.updateUser(params.id, updateDto);
   }
 

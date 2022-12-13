@@ -5,11 +5,6 @@ export const USER_CONST = {
   MODEL_PROVIDER: 'USER_MODEL',
 };
 
-export enum UserTypes {
-  ADMIN = 1,
-  USER = 2,
-}
-
 export enum UserStatus {
   ACTIVE = 1,
   INACTIVE = 0,
@@ -47,7 +42,6 @@ export const ERROR_USER = {
       'This phone number already exists. Please input a different phone number',
   },
 };
-
 
 export const USER_SWAGGER_RESPONSE = {
   GET_LIST_SUCCESS: swaggerSchemaExample(

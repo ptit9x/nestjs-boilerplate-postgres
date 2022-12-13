@@ -18,8 +18,8 @@ export const DATABASE_CONFIG = {
 };
 
 export const API_CONFIG = {
-  VERSION_V1: '1'
-}
+  VERSION_V1: '1',
+};
 
 export const DEFAULT_ADMIN_USER = {
   email: process.env.DEFAULT_ADMIN_USER,

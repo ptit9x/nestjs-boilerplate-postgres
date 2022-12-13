@@ -2,7 +2,7 @@ import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
 import { PERMISSIONS } from '../permissions/permissions.constant';
 
 export const ROLE_CONST = {
-  MODEL_NAME: 'roles',
+  MODEL_NAME: 'role',
   MODEL_ROLE_COMPANY_NAME: 'company_role',
   MODEL_PROVIDER: 'ROLE_MODEL',
   MODEL_ROLE_COMPANY_PROVIDER: 'ROLE_COMPANY_MODEL',

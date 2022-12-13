@@ -18,7 +18,6 @@ export class PermissionsGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
     const userPermissions = user?.permissions || [];
-    console.log(routePermissions, ' routePermissions', user);
     if (user?.isAdministrator) return true;
 
     const hasPermission = () =>

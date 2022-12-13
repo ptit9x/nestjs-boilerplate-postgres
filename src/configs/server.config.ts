@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
 import { HttpExceptionFilter } from 'src/share/filter/http-exception.filter';
 import { TransformInterceptor } from 'src/share/interceptors/transform.interceptor';
-import { ValidationPipe } from 'src/share/pipe/validation.pipe';
 
 export default function (app: INestApplication) {
   app.enableCors({
@@ -24,7 +24,9 @@ export default function (app: INestApplication) {
   });
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalInterceptors(new TransformInterceptor());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(json({ limit: '8mb' }));
 
