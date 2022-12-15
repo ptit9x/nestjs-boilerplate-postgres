@@ -9,16 +9,16 @@ import { RolesRepository } from './roles.repository';
 @Injectable()
 export class RolesService implements OnModuleInit {
   constructor(
-    private readonly rolesRepossitory: RolesRepository,
+    private readonly rolesRepository: RolesRepository,
     private readonly permissionService: PermissionsService,
   ) {}
 
   async onModuleInit() {
-    const rolesListExisted = await this.rolesRepossitory.findExistedRecord();
+    const rolesListExisted = await this.rolesRepository.findExistedRecord();
     if (rolesListExisted?.length) return;
 
     for (const role of ROLES_DEFAULT) {
-      const roleExisted = await this.rolesRepossitory.findOneByCondition({
+      const roleExisted = await this.rolesRepository.findOneByCondition({
         where: { name: role.name },
       });
       if (!roleExisted) {
@@ -31,13 +31,13 @@ export class RolesService implements OnModuleInit {
         rModel.name = role.name;
         rModel.type = role.type;
         rModel.permissions = permissions;
-        await this.rolesRepossitory.save(rModel);
+        await this.rolesRepository.save(rModel);
       }
     }
   }
 
   public async findAdminRole() {
-    return this.rolesRepossitory.repository.find({
+    return this.rolesRepository.repository.find({
       select: {
         name: true,
         id: true,
@@ -49,6 +49,6 @@ export class RolesService implements OnModuleInit {
   }
 
   public findAllByConditions(conditions: FindManyOptions) {
-    return this.rolesRepossitory.repository.find(conditions);
+    return this.rolesRepository.repository.find(conditions);
   }
 }

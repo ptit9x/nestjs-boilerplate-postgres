@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_CONFIG } from 'src/configs/constant.config';
 import { IAdminPayload } from 'src/share/common/app.interface';
 import { GetUser } from 'src/share/decorator/get-user.decorator';
@@ -34,6 +34,7 @@ import { UserService } from './user.service';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('User')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
