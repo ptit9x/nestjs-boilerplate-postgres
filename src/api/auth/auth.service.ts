@@ -8,7 +8,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './payloads/jwt-payload';
 import { JWT_CONFIG } from '../../configs/constant.config';
-import { UserStatus, UserTypes } from 'src/api/user/user.constant';
+import { UserStatus } from 'src/api/user/user.constant';
 import { ERROR_AUTH } from './auth.constant';
 
 @Injectable()
@@ -24,12 +24,8 @@ export class AuthService {
       where: {
         email: email,
       },
-      relations: ['role.rolePermission.permission'],
+      relations: ['roles.permissions'],
     });
-
-    if (!user || user.type != UserTypes.ADMIN) {
-      throw new BadRequestException(ERROR_AUTH.USER_NOT_FOUND.MESSAGE);
-    }
 
     const isRightPassword = bcrypt.compareSync(password, user.password);
     if (!isRightPassword)
@@ -41,9 +37,11 @@ export class AuthService {
 
     const jwtExpiresIn = parseInt(JWT_CONFIG.EXPIRED_IN);
     const scopes = [];
-    if (user.role) {
-      user.role.rolePermission.forEach((rolePermission) => {
-        scopes.push(rolePermission.permission.name);
+    if (user?.roles?.length) {
+      user.roles?.forEach((role) => {
+        role?.permissions?.forEach((permission) => {
+          scopes.push(permission.name);
+        });
       });
     }
 
@@ -54,8 +52,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      isAdministrator: user.isAdministrator,
-      scopes: scopes,
+      scopes,
     };
     return {
       accessToken: await this.jwtService.signAsync(payload, {

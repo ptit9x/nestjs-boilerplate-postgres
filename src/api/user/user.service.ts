@@ -9,8 +9,10 @@ import * as bcrypt from 'bcrypt';
 import { JWT_CONFIG, DEFAULT_ADMIN_USER } from 'src/configs/constant.config';
 import { IPaginateParams } from 'src/share/common/app.interface';
 import { StringUtil } from 'src/share/utils/string.util';
-import { DataSource, FindManyOptions, FindOneOptions, Like } from 'typeorm';
-import { ERROR_USER, UserStatus, UserTypes } from './user.constant';
+import { DataSource, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
+import { ROLES_DEFAULT, RoleTypes } from '../roles/roles.constant';
+import { RolesService } from '../roles/roles.service';
+import { ERROR_USER, UserStatus } from './user.constant';
 import { UserEntity } from './user.entity';
 import { IChangePassword, ICreateUser, IUpdateUser } from './user.interface';
 import { UserRepository } from './user.repository';
@@ -19,19 +21,30 @@ import { UserRepository } from './user.repository';
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly roleService: RolesService,
     @Inject('DATABASE_CONNECTION') private dataSource: DataSource,
   ) {}
 
   async onModuleInit() {
     const userListFound = await this.userRepository.findExistedRecord();
     if (!userListFound?.length) {
-      await this.userRepository.save({
-        email: DEFAULT_ADMIN_USER.email,
-        password: await bcrypt.hash(DEFAULT_ADMIN_USER.password, JWT_CONFIG.SALT_ROUNDS),
-        name: DEFAULT_ADMIN_USER.name,
-        type: UserTypes.ADMIN,
-        is_administrator: true,
+      const uModel = new UserEntity();
+      uModel.email = DEFAULT_ADMIN_USER.email;
+      uModel.password = await bcrypt.hash(
+        DEFAULT_ADMIN_USER.password,
+        JWT_CONFIG.SALT_ROUNDS,
+      );
+      uModel.name = DEFAULT_ADMIN_USER.name;
+      uModel.roles = await this.roleService.findAllByConditions({
+        where: {
+          name: In(
+            ROLES_DEFAULT.filter((r) => r.type === RoleTypes.Admin).map(
+              (r) => r.name,
+            ),
+          ),
+        },
       });
+      await this.userRepository.save(uModel);
     }
   }
 
@@ -167,21 +180,19 @@ export class UserService {
   async findUser(paginateParams: IPaginateParams) {
     const conditions: any = {};
     if (paginateParams.search) {
-      conditions.name = Like(`%${StringUtil.mysqlRealEscapeString(paginateParams.search)}%`);
+      conditions.name = Like(
+        `%${StringUtil.mysqlRealEscapeString(paginateParams.search)}%`,
+      );
     }
     if (paginateParams.status) {
-      conditions.status = Number(paginateParams.status) == UserStatus.ACTIVE ? 1 : 2;
+      conditions.status =
+        Number(paginateParams.status) == UserStatus.ACTIVE ? 1 : 2;
     }
     return this.userRepository.findAllByConditions(conditions, paginateParams);
   }
 
   public async updateUser(id: number, paramsUpdate: IUpdateUser) {
-    const userFound = await this.userRepository.repository.findOne({
-      where: {
-        id: id,
-        isAdministrator: false,
-      },
-    });
+    const userFound = await this.userRepository.repository.findOneBy({ id });
     if (!userFound) {
       throw new NotFoundException();
     }
@@ -196,12 +207,11 @@ export class UserService {
     };
   }
 
-  public async changePassword(id: number, paramsChangePassword: IChangePassword) {
-    const userFound = await this.userRepository.findOneByCondition({
-      where: {
-        id: id,
-      },
-    });
+  public async changePassword(
+    id: number,
+    paramsChangePassword: IChangePassword,
+  ) {
+    const userFound = await this.userRepository.repository.findOneBy({ id });
 
     const { oldPassword, newPassword } = paramsChangePassword;
     const isRightPassword = bcrypt.compareSync(oldPassword, userFound.password);

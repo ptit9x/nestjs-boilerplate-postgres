@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_CONFIG } from 'src/configs/constant.config';
 import { IAdminPayload } from 'src/share/common/app.interface';
 import { GetUser } from 'src/share/decorator/get-user.decorator';
@@ -34,6 +34,7 @@ import { UserService } from './user.service';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('User')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -48,7 +49,10 @@ export class UserController {
   @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
   @Patch('change-password')
   @HttpCode(HttpStatus.OK)
-  changeAdminPassword(@GetUser() user: IAdminPayload, @Body() changeAdminPasswordDto: ChangeUserPasswordDto) {
+  changeAdminPassword(
+    @GetUser() user: IAdminPayload,
+    @Body() changeAdminPasswordDto: ChangeUserPasswordDto,
+  ) {
     return this.userService.changePassword(user.sub, changeAdminPasswordDto);
   }
 
@@ -56,7 +60,10 @@ export class UserController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(PermissionsGuard)
-  public async updateUser(@Param() params: { id: number }, @Body() updateDto: UpdateUserDto): Promise<any> {
+  public async updateUser(
+    @Param() params: { id: number },
+    @Body() updateDto: UpdateUserDto,
+  ): Promise<any> {
     return this.userService.updateUser(params.id, updateDto);
   }
 

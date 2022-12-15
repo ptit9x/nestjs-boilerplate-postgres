@@ -1,13 +1,14 @@
 import {
   Column,
   Entity,
-  JoinColumn,
-  OneToMany,
   BaseEntity,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { RoleTypes, ROLE_CONST } from '../roles.constant';
-import { RolePermissionEntity } from '../../../api/role-permission/entities/role-permission.entity';
+import { PermissionEntity } from 'src/api/permissions/entities/permission.entity';
+import { UserEntity } from 'src/api/user/user.entity';
 
 @Entity({ name: ROLE_CONST.MODEL_NAME })
 export class RoleEntity extends BaseEntity {
@@ -23,10 +24,15 @@ export class RoleEntity extends BaseEntity {
   @Column({ type: 'bigint', nullable: true })
   created_by: number;
 
-  @OneToMany(
-    () => RolePermissionEntity,
-    (rolePermission) => rolePermission.role,
-  )
-  @JoinColumn({ name: 'role_id' })
-  rolePermission!: RolePermissionEntity[];
+  @ManyToMany(() => PermissionEntity)
+  @JoinTable()
+  @JoinTable({
+    // name: 'role_permissions_permission',
+    joinColumn: { name: 'role_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'permission_id' },
+  })
+  permissions: PermissionEntity[];
+
+  @ManyToMany(() => UserEntity)
+  users: UserEntity[];
 }

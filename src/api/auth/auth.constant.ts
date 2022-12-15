@@ -86,4 +86,3 @@ export const AUTH_SWAGGER_RESPONSE = {
     'internal server error',
   ),
 };
-

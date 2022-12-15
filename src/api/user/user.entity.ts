@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { UserStatus, UserTypes, USER_CONST } from './user.constant';
+import { UserStatus, USER_CONST } from './user.constant';
 import { BaseEntity } from '../../share/database/base.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
 @Entity({ name: USER_CONST.MODEL_NAME })
@@ -16,12 +16,6 @@ export class UserEntity extends BaseEntity {
   @Exclude()
   password: string;
 
-  @Column({ type: 'enum', enum: UserTypes })
-  type: number;
-
-  @Column({ name: 'is_administrator', default: false })
-  isAdministrator: boolean;
-
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
   status: number;
 
@@ -34,7 +28,12 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   last_login: Date;
 
-  @ManyToOne(() => RoleEntity)
-  @JoinColumn({ name: 'role_id' })
-  role: RoleEntity;
+  @ManyToMany(() => RoleEntity)
+  @JoinTable()
+  @JoinTable({
+    // name: "user_roles_role",
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id' },
+  })
+  roles: RoleEntity[];
 }
