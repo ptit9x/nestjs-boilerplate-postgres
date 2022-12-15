@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_CONFIG } from 'src/configs/constant.config';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PermissionsGuard } from '../permissions/permissions.guard';
@@ -11,6 +11,7 @@ import { RolesService } from './roles.service';
   version: API_CONFIG.VERSION_V1,
 })
 @ApiTags('Roles')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
