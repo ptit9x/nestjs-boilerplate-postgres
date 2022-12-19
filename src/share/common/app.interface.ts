@@ -1,7 +1,7 @@
 export interface IAdminPayload {
   sub: number;
   email: string;
-  fullName: string;
+  fullName?: string;
 }
 
 export interface IUserPayload {

@@ -45,8 +45,8 @@ export class AuthService {
       });
     }
 
-    const isFirstTimeLogin = !user.last_login;
-    user.last_login = new Date(dayjs().format('YYYY-MM-DD HH:mm:ss'));
+    const isFirstTimeLogin = !user.lastLogin;
+    user.lastLogin = new Date(dayjs().format('YYYY-MM-DD HH:mm:ss'));
     user.save();
 
     const payload: JwtPayload = {

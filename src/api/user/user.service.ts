@@ -50,7 +50,8 @@ export class UserService {
 
   async getByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneByCondition({
-      where: { email: email },
+      where: { email },
+      relations: ['roles.permissions'],
     });
     if (!user) {
       throw new NotFoundException(ERROR_USER.USER_NOT_FOUND.MESSAGE);

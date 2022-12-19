@@ -24,4 +24,11 @@ export class PermissionsService implements OnModuleInit {
   public find(conditions: FindManyOptions) {
     return this.permissionsRepository.repository.find(conditions);
   }
+
+  public async getPermissions() {
+    const data = await this.permissionsRepository.repository.find({});
+    return {
+      data,
+    };
+  }
 }

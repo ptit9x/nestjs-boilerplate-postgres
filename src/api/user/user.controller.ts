@@ -12,11 +12,13 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_CONFIG } from 'src/configs/constant.config';
 import { IAdminPayload } from 'src/share/common/app.interface';
 import { GetUser } from 'src/share/decorator/get-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { PermissionMetadata } from '../permissions/permission.decorator';
+import { PERMISSIONS } from '../permissions/permissions.constant';
 import { PermissionsGuard } from '../permissions/permissions.guard';
 import {
   CreateInternaleUserDto,
@@ -34,6 +36,7 @@ import { UserService } from './user.service';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('User')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -48,11 +51,11 @@ export class UserController {
   @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
   @Patch('change-password')
   @HttpCode(HttpStatus.OK)
-  changeAdminPassword(
+  changePassword(
     @GetUser() user: IAdminPayload,
-    @Body() changeAdminPasswordDto: ChangeUserPasswordDto,
+    @Body() body: ChangeUserPasswordDto,
   ) {
-    return this.userService.changePassword(user.sub, changeAdminPasswordDto);
+    return this.userService.changePassword(user.sub, body);
   }
 
   @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
@@ -70,6 +73,7 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(PermissionsGuard)
+  @PermissionMetadata(PERMISSIONS.USER_READ)
   public findUser(@Query() queryParamDto: QueryParamDto): Promise<any> {
     return this.userService.findUser(queryParamDto);
   }

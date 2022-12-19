@@ -1,9 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { type } from 'os';
 import { FindManyOptions, In } from 'typeorm';
 import { PermissionsService } from '../permissions/permissions.service';
-import { RoleEntity } from './entities/role.entity';
-import { ROLES_DEFAULT, RoleTypes } from './roles.constant';
+import { RoleEntity } from './role.entity';
+import { ROLES_DEFAULT } from './roles.constant';
 import { RolesRepository } from './roles.repository';
 
 @Injectable()
@@ -36,16 +35,26 @@ export class RolesService implements OnModuleInit {
     }
   }
 
-  public async findAdminRole() {
-    return this.rolesRepossitory.repository.find({
+  public async findRole({ search, type }) {
+    const options = {
       select: {
         name: true,
         id: true,
       },
-      where: {
-        type: RoleTypes.Admin,
-      },
-    });
+      where: {},
+      relations: ['permissions'],
+    } as any;
+    if (search) {
+      options.where.search = In(search);
+    }
+    if (type) {
+      options.where.type = type;
+    }
+    const data = await this.rolesRepossitory.repository.find(options);
+
+    return {
+      data
+    }
   }
 
   public findAllByConditions(conditions: FindManyOptions) {
