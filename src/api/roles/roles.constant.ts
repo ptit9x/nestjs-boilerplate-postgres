@@ -16,12 +16,7 @@ export enum RoleTypes {
 export const ROLES_DEFAULT = [
   {
     name: 'Administrator',
-    permissions: [
-      PERMISSIONS.USER_CREATE,
-      PERMISSIONS.USER_READ,
-      PERMISSIONS.USER_EDIT,
-      PERMISSIONS.USER_DELETE,
-    ],
+    permissions: Object.values(PERMISSIONS),
     type: RoleTypes.Admin,
   },
   {

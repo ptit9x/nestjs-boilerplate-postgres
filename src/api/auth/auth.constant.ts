@@ -14,10 +14,6 @@ export const ERROR_AUTH = {
     MESSAGE:
       'This account has been deactivated. Please contact the organization admin to reactivate your account.',
   },
-  USER_EXISTED: {
-    CODE: 'us00004',
-    MESSAGE: 'User existed!',
-  },
   USER_WRONG_OLD_PASSWORD: {
     code: 'us00005',
     MESSAGE: 'Password does not match',

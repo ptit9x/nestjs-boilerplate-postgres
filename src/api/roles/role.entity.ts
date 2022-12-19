@@ -6,7 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { RoleTypes, ROLE_CONST } from '../roles.constant';
+import { RoleTypes, ROLE_CONST } from './roles.constant';
 import { PermissionEntity } from 'src/api/permissions/entities/permission.entity';
 import { UserEntity } from 'src/api/user/user.entity';
 
@@ -27,7 +27,7 @@ export class RoleEntity extends BaseEntity {
   @ManyToMany(() => PermissionEntity)
   @JoinTable()
   @JoinTable({
-    // name: 'role_permissions_permission',
+    name: 'role_permission', // role_permissions_permission
     joinColumn: { name: 'role_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'permission_id' },
   })

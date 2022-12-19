@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { ROLE_CONST } from './roles.constant';
-import { RoleEntity } from './entities/role.entity';
+import { RoleEntity } from './role.entity';
 
 export const rolesProvider = [
   {
