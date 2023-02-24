@@ -7,8 +7,8 @@ import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
-import { HttpExceptionFilter } from 'src/share/filter/http-exception.filter';
-import { TransformInterceptor } from 'src/share/interceptors/transform.interceptor';
+import { HttpExceptionFilter } from '../share/filter/http-exception.filter';
+import { TransformInterceptor } from '../share/interceptors/transform.interceptor';
 
 export default function (app: INestApplication) {
   app.enableCors({

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 
-import { PERMISSION_METADATA } from 'src/share/common/app.const';
+import { PERMISSION_METADATA } from '../../share/common/app.const';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -15,9 +15,10 @@ export class PermissionsGuard implements CanActivate {
       PERMISSION_METADATA,
       context.getHandler(),
     );
+    console.log(routePermissions, ' routePermissions');
 
     const { user } = context.switchToHttp().getRequest();
-    const userPermissions = user?.permissions || [];
+    const userPermissions = user?.scopes || [];
     if (user?.isAdministrator) return true;
 
     const hasPermission = () =>

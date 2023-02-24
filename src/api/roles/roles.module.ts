@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { RolesService } from './roles.service';
 import { RolesController } from './roles.controller';
-import { DatabaseModule } from 'src/configs/database/database.module';
+import { DatabaseModule } from '../../configs/database/database.module';
 import { RolesRepository } from './roles.repository';
 import { rolesProvider } from './roles.provider';
 import { PermissionsModule } from '../permissions/permissions.module';

@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { DATABASE_CONFIG } from './constant.config';
 
 import { PermissionEntity } from '../api/permissions/entities/permission.entity';
-import { RoleEntity } from '../api/roles/entities/role.entity';
+import { RoleEntity } from '../api/roles/role.entity';
 import { UserEntity } from '../api/user/user.entity';
 
 import { CreatePermissions1661154835736 } from '../../migrations/1661154835736-CreatePermissions';
@@ -22,6 +22,6 @@ export default new DataSource({
     CreateRoles1661161731016,
     CreateUser1661224228702,
   ],
-  synchronize: true,
+  synchronize: false,
   logging: DATABASE_CONFIG.logging,
 });
