@@ -1,6 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { API_CONFIG } from 'src/configs/constant.config';
+import { API_CONFIG } from '../../configs/constant.config';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PermissionMetadata } from './permission.decorator';
 import { PERMISSIONS } from './permissions.constant';

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TypeOrmRepository } from 'src/share/database/typeorm.repository';
 import { Repository } from 'typeorm';
+import { TypeOrmRepository } from '../../share/database/typeorm.repository';
 import { ENTITY_CONST } from './entity.constant';
 import { EntityEntity } from './entity.entity';
 

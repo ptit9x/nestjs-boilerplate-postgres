@@ -5,6 +5,12 @@ export class CreateUser1661224228702 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
+      CREATE TYPE "user_gender_enum" AS ENUM ('1', '2');
+    `);
+    await queryRunner.query(`
+      CREATE TYPE "user_status_enum" AS ENUM ('1', '2', '3', '4');
+    `);
+    await queryRunner.query(`
       CREATE TABLE public."user" (
         id bigserial NOT NULL,
         created_at timestamp NOT NULL DEFAULT now(),
@@ -42,6 +48,12 @@ export class CreateUser1661224228702 implements MigrationInterface {
     `);
     await queryRunner.query(`
       DROP TABLE \"user\"
+    `);
+    await queryRunner.query(`
+      DROP TYPE "user_gender_enum";
+    `);
+    await queryRunner.query(`
+      DROP TYPE "user_status_enum";
     `);
   }
 }

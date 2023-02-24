@@ -7,23 +7,18 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post,
   Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { API_CONFIG } from 'src/configs/constant.config';
-import { IAdminPayload } from 'src/share/common/app.interface';
-import { GetUser } from 'src/share/decorator/get-user.decorator';
+import { API_CONFIG } from '../../configs/constant.config';
+import { IAdminPayload } from '../../share/common/app.interface';
+import { GetUser } from '../../share/decorator/get-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PermissionMetadata } from '../permissions/permission.decorator';
 import { PERMISSIONS } from '../permissions/permissions.constant';
 import { PermissionsGuard } from '../permissions/permissions.guard';
-import {
-  CreateInternaleUserDto,
-  CreateMultilpleUsersDto,
-} from './dto/create-user.dto';
 import { QueryParamDto } from './dto/query-param.dto';
 import { ChangeUserPasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import { USER_SWAGGER_RESPONSE } from './user.constant';

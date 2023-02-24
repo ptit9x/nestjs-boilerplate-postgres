@@ -3,12 +3,12 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as dayjs from 'dayjs';
 
-import { UserService } from 'src/api/user/user.service';
+import { UserService } from '../../api/user/user.service';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './payloads/jwt-payload';
 import { JWT_CONFIG } from '../../configs/constant.config';
-import { UserStatus } from 'src/api/user/user.constant';
+import { UserStatus } from '../../api/user/user.constant';
 import { ERROR_AUTH } from './auth.constant';
 
 @Injectable()

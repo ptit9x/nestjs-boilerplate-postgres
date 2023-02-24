@@ -1,4 +1,4 @@
-import { swaggerSchemaExample } from 'src/share/utils/swagger_schema';
+import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
 
 export const PERMISSION_CONST = {
   MODEL_NAME: 'permission',

@@ -5,16 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-
-import { JWT_CONFIG, DEFAULT_ADMIN_USER } from 'src/configs/constant.config';
-import { IPaginateParams } from 'src/share/common/app.interface';
-import { StringUtil } from 'src/share/utils/string.util';
+import { JWT_CONFIG, DEFAULT_ADMIN_USER } from '../../configs/constant.config';
+import { IPaginateParams } from '../../share/common/app.interface';
+import { StringUtil } from '../../share/utils/string.util';
 import { DataSource, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
 import { ROLES_DEFAULT, RoleTypes } from '../roles/roles.constant';
 import { RolesService } from '../roles/roles.service';
 import { ERROR_USER, UserStatus } from './user.constant';
 import { UserEntity } from './user.entity';
-import { IChangePassword, ICreateUser, IUpdateUser } from './user.interface';
+import { IChangePassword, IUpdateUser } from './user.interface';
 import { UserRepository } from './user.repository';
 
 @Injectable()

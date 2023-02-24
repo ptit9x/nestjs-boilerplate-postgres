@@ -22,6 +22,6 @@ export default new DataSource({
     CreateRoles1661161731016,
     CreateUser1661224228702,
   ],
-  synchronize: true,
+  synchronize: false,
   logging: DATABASE_CONFIG.logging,
 });

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { API_CONFIG } from 'src/configs/constant.config';
+import { API_CONFIG } from '../../configs/constant.config';
 import { SWAGGER_RESPONSE } from './entity.constant';
 import { EntityService } from './entity.service';
 
