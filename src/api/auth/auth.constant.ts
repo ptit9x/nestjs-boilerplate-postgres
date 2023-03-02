@@ -3,16 +3,21 @@ import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
 export const ERROR_AUTH = {
   USER_NOT_FOUND: {
     CODE: 'us00001',
-    MESSAGE: 'This email does not exist in our records',
+    MESSAGE: 'Username or password is invalid!',
   },
   PASSWORD_INCORRECT: {
     CODE: 'us00002',
-    MESSAGE: 'That’s an incorrect password. Please try again.',
+    MESSAGE: 'Username or password is invalid!',
   },
-  USER_INACTIVE: {
+  USER_DEACTIVE: {
     CODE: 'us00003',
     MESSAGE:
       'This account has been deactivated. Please contact the organization admin to reactivate your account.',
+  },
+  USER_LOCKED: {
+    CODE: 'us00004',
+    MESSAGE:
+      'Your account has been locked. Please contact the Admin to activate your account again!',
   },
   USER_WRONG_OLD_PASSWORD: {
     code: 'us00005',
@@ -22,12 +27,18 @@ export const ERROR_AUTH = {
     CODE: 'us00006',
     MESSAGE: 'This username already exists. Please input a new username',
   },
-  USER_PHONE_EXISTED: {
+  USER_LOCKED_30_MIN: {
     CODE: 'us00007',
-    MESSAGE:
-      'This phone number already exists. Please input a different phone number',
+    MESSAGE: 'Your account has been locked. Please try again after 30 minutes!',
   },
 };
+
+export const WRONG_NUMBER_OF_LOGIN = {
+  FIRST_TIME: 10,
+  SECOND_TIME: 20,
+  THIRD_TIME: 30,
+};
+export const ACTIVE_USER_AFTER_LOCK = 30; // 30 min
 
 export const AUTH_SWAGGER_RESPONSE = {
   LOGIN_SUCCESS: swaggerSchemaExample(

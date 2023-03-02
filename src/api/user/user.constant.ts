@@ -46,33 +46,85 @@ export const ERROR_USER = {
 export const USER_SWAGGER_RESPONSE = {
   GET_LIST_SUCCESS: swaggerSchemaExample(
     {
-      data: {
-        id: '1',
-        created_at: '2022-08-23T02:21:16.992Z',
-        updated_at: '2022-08-23T02:21:16.992Z',
-        deleted_at: null,
-        name: 'Administrator',
-        email: 'bach.nguyen@vmodev.com',
-        type: 1,
-        is_administrator: true,
-        status: 1,
-        created_by: null,
-        country: null,
-        city: null,
-        postal_code: null,
-        phone: null,
-        expired_date: null,
-      },
+      data: [
+        {
+          id: '1',
+          createdAt: '2023-02-24T01:01:18.077Z',
+          updatedAt: '2023-03-01T21:29:20.257Z',
+          name: 'Richard Do',
+          email: 'huynhdn@gmail.com',
+          status: 1,
+          createdBy: null,
+          phone: null,
+          lastLogin: '2023-03-02T04:29:20.000Z',
+        },
+      ],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      totalPage: 1,
     },
-    'Create success',
+    'List success',
   ),
-
-  UPDATE_SUCCESS: swaggerSchemaExample(
+  UPDATE_SUCCESS: swaggerSchemaExample('', 'Update success'),
+  GET_SUCCESS: swaggerSchemaExample(
     {
-      data: {
-        success: true,
-      },
+      id: '1',
+      createdAt: '2023-02-24T01:01:18.077Z',
+      updatedAt: '2023-03-01T21:30:49.424Z',
+      name: 'Richard Do',
+      email: 'huynhdn@gmail.com',
+      status: 1,
+      createdBy: null,
+      phone: null,
+      lastLogin: '2023-03-02T04:29:20.000Z',
+      roles: [
+        {
+          id: 1,
+          name: 'Administrator',
+          type: 1,
+          created_by: null,
+          permissions: [
+            {
+              id: 1,
+              name: 'user:create',
+            },
+            {
+              id: 2,
+              name: 'user:read',
+            },
+            {
+              id: 3,
+              name: 'user:update',
+            },
+            {
+              id: 4,
+              name: 'user:delete',
+            },
+            {
+              id: 5,
+              name: 'role:create',
+            },
+            {
+              id: 6,
+              name: 'role:read',
+            },
+            {
+              id: 7,
+              name: 'role:update',
+            },
+            {
+              id: 8,
+              name: 'role:delete',
+            },
+            {
+              id: 9,
+              name: 'permission:read',
+            },
+          ],
+        },
+      ],
     },
-    'Update success',
+    'Get success',
   ),
 };

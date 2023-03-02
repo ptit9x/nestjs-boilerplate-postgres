@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
-import { PERMISSION_CONST } from './permissions.constant';
-import { PermissionEntity } from './entities/permission.entity';
+import { PERMISSION_CONST } from './permission.constant';
+import { PermissionEntity } from './permission.entity';
 
 export const permissionsProvider = [
   {

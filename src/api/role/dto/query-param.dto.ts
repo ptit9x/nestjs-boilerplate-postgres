@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, IsOptional, IsIn, IsNumberString } from 'class-validator';
-import { RoleTypes } from '../roles.constant';
+import { RoleTypes } from '../role.constant';
 
 export class QueryParamDto {
   @ApiPropertyOptional()

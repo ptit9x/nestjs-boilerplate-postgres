@@ -1,7 +1,13 @@
+import { IRole } from '../../role/role.interface';
+
 export interface JwtPayload {
-  sub?: number;
+  sub: string;
   email: string;
-  scopes?: string[];
-  name?: string;
+  fullName: string;
   iat?: string;
+  roles?: IRole[];
+}
+
+export interface JwtRefreshTokenPayload {
+  userId: string;
 }

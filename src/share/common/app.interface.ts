@@ -1,5 +1,5 @@
 export interface IAdminPayload {
-  sub: number;
+  sub: string;
   email: string;
   fullName?: string;
 }

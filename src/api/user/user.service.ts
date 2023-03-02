@@ -9,8 +9,8 @@ import { JWT_CONFIG, DEFAULT_ADMIN_USER } from '../../configs/constant.config';
 import { IPaginateParams } from '../../share/common/app.interface';
 import { StringUtil } from '../../share/utils/string.util';
 import { DataSource, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
-import { ROLES_DEFAULT, RoleTypes } from '../roles/roles.constant';
-import { RolesService } from '../roles/roles.service';
+import { RoleStatus, ROLES_DEFAULT, RoleTypes } from '../role/role.constant';
+import { RolesService } from '../role/role.service';
 import { ERROR_USER, UserStatus } from './user.constant';
 import { UserEntity } from './user.entity';
 import { IChangePassword, IUpdateUser } from './user.interface';
@@ -49,8 +49,13 @@ export class UserService {
 
   async getByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneByCondition({
-      where: { email },
-      relations: ['roles.permissions'],
+      where: {
+        email,
+        roles: {
+          status: RoleStatus.ACTIVE,
+        },
+      },
+      relations: ['roles.permissions', 'organizations'],
     });
     if (!user) {
       throw new NotFoundException(ERROR_USER.USER_NOT_FOUND.MESSAGE);
@@ -188,10 +193,15 @@ export class UserService {
       conditions.status =
         Number(paginateParams.status) == UserStatus.ACTIVE ? 1 : 2;
     }
-    return this.userRepository.findAllByConditions(conditions, paginateParams);
+    return this.userRepository.findAllByConditions(conditions, paginateParams, [
+      'roles',
+    ]);
   }
 
-  public async updateUser(id: number, paramsUpdate: IUpdateUser) {
+  public async updateUser(
+    id: string,
+    paramsUpdate: IUpdateUser,
+  ): Promise<boolean> {
     const userFound = await this.userRepository.repository.findOneBy({ id });
     if (!userFound) {
       throw new NotFoundException();
@@ -202,17 +212,14 @@ export class UserService {
     }
 
     await this.userRepository.repository.update(id, dataUpdate);
-    return {
-      success: true,
-    };
+    return true;
   }
 
   public async changePassword(
-    id: number,
+    id: string,
     paramsChangePassword: IChangePassword,
-  ) {
+  ): Promise<boolean> {
     const userFound = await this.userRepository.repository.findOneBy({ id });
-
     const { oldPassword, newPassword } = paramsChangePassword;
     const isRightPassword = bcrypt.compareSync(oldPassword, userFound.password);
     if (!isRightPassword) {
@@ -224,8 +231,47 @@ export class UserService {
 
     userFound.password = bcrypt.hashSync(newPassword, JWT_CONFIG.SALT_ROUNDS);
     userFound.save();
-    return {
-      success: true,
-    };
+
+    return true;
+  }
+
+  removeRefreshToken(userId: string): Promise<any> {
+    return this.userRepository.update(userId, {
+      currentHashedRefreshToken: null,
+    });
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.userRepository.repository.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        currentHashedRefreshToken: true,
+      },
+    });
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user?.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+    return null;
+  }
+
+  async findOne(conditions: FindOneOptions): Promise<UserEntity> {
+    const user = await this.userRepository.repository.findOne(conditions);
+    if (!user) {
+      throw new NotFoundException(ERROR_USER.USER_NOT_FOUND);
+    }
+    return user;
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(userId, {
+      currentHashedRefreshToken,
+    });
   }
 }

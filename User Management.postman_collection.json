@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "61049dc9-3325-43b7-b85a-17fc608a4220",
+		"_postman_id": "184caf65-f9a9-40f9-8c49-974898628685",
 		"name": "User Management",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19622310"
@@ -36,7 +36,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"huynhdn@vmodev.com\",\n    \"password\": \"abcd1234\"\n}",
+							"raw": "{\n    \"email\": \"huynhdn@gmail.com\",\n    \"password\": \"abcd1234\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -52,6 +52,52 @@
 								"api",
 								"v1",
 								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Organization",
+			"item": [
+				{
+					"name": "organizations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/api/v1/organizations",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"organizations"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -78,14 +124,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{endpoint}}/api/v1/user",
+							"raw": "{{endpoint}}/api/v1/users",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"user"
+								"users"
 							]
 						}
 					},
@@ -107,14 +153,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{endpoint}}/api/v1/user/info",
+							"raw": "{{endpoint}}/api/v1/users/info",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"user",
+								"users",
 								"info"
 							]
 						}
@@ -146,14 +192,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{endpoint}}/api/v1/user/change-password",
+							"raw": "{{endpoint}}/api/v1/users/change-password",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"user",
+								"users",
 								"change-password"
 							]
 						}
@@ -181,7 +227,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{endpoint}}/api/v1/roles?type=1",
+							"raw": "{{endpoint}}/api/v1/roles",
 							"host": [
 								"{{endpoint}}"
 							],
@@ -193,7 +239,8 @@
 							"query": [
 								{
 									"key": "type",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "",

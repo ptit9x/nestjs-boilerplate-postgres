@@ -1,12 +1,23 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum } from 'class-validator';
-export class QueryParamDto {
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBooleanString,
+  IsNotEmpty,
+  IsNumberString,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
+
+export class QueryParamBaseDto {
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNumberString()
   page: number;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNumberString()
   pageSize: number;
 
   @ApiPropertyOptional()
@@ -23,10 +34,13 @@ export class QueryParamDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value.trim())
   search: string;
+}
 
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  status: string;
+export class ParamIdBaseDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumberString()
+  id: string;
 }
