@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { Inject } from '@nestjs/common/decorators';
-import { ILike, DataSource, Not, In } from 'typeorm';
+import { ILike, DataSource, In, Repository } from 'typeorm';
 import { StringUtil } from '../../share/utils/string.util';
 import { UserStatus } from '../user/user.constant';
 import { UserEntity } from '../user/user.entity';
@@ -10,31 +9,35 @@ import {
   ROLES_ORGANIZATION_DEFAULT,
 } from './organization.constant';
 import { OrganizationEntity } from './organization.entity';
-import { OrganizationRepository } from './organization.repository';
-import { UpdateOrganizationDto } from './dto/organization.dto';
 import { QueryParamDto } from './dto/query-param.dto';
 import { RoleEntity } from '../role/role.entity';
-import { PermissionsService } from '../permission/permission.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from 'src/share/database/base.service';
+import { PermissionEntity } from '../permission/permission.entity';
 
 @Injectable()
-export class OrganizationService {
+export class OrganizationService extends BaseService<OrganizationEntity> {
   private readonly logger = new Logger(OrganizationService.name);
   constructor(
-    private readonly organizationRepository: OrganizationRepository,
-    private readonly permissionService: PermissionsService,
-    @Inject('DATABASE_CONNECTION') private dataSource: DataSource,
-  ) {}
+    @InjectRepository(OrganizationEntity)
+    private readonly organizationRepository: Repository<OrganizationEntity>,
+    @InjectRepository(PermissionEntity)
+    private readonly permissionRepository: Repository<PermissionEntity>,
+    private dataSource: DataSource,
+  ) {
+    super(organizationRepository);
+  }
 
   async onModuleInit() {
-    const exist = await this.organizationRepository.findExistedRecord();
-    if (!exist?.length) {
+    const count = await this.organizationRepository.countBy({});
+    if (count === 0) {
       const oModel = new OrganizationEntity();
       oModel.id = DEFAULT_ORGANIZATION.id;
       oModel.name = DEFAULT_ORGANIZATION.name;
       const organization = await this.organizationRepository.save(oModel);
 
       for (const role of ROLES_ORGANIZATION_DEFAULT) {
-        const permissions = await this.permissionService.find({
+        const permissions = await this.permissionRepository.find({
           where: {
             name: In(role.permissions),
           },
@@ -60,52 +63,7 @@ export class OrganizationService {
         `%${StringUtil.mysqlRealEscapeString(query.search)}%`,
       );
     }
-    return this.organizationRepository.findAllByConditions(conditions, query, [
-      'users',
-    ]);
-  }
-
-  async create({ name, description }): Promise<OrganizationEntity> {
-    const exist = await this.organizationRepository.repository.findOneBy({
-      name,
-    });
-    if (exist) {
-      throw new BadRequestException(ERROR_ORGANIZATION.EXIST);
-    }
-
-    return this.organizationRepository.save({ name, description });
-  }
-
-  async get(id: number): Promise<OrganizationEntity> {
-    const data = await this.organizationRepository.repository.findOne({
-      where: {
-        id,
-      },
-      relations: ['users'],
-    });
-    if (!data) {
-      throw new BadRequestException(ERROR_ORGANIZATION.NOT_FOUND);
-    }
-    return data;
-  }
-
-  public async update(
-    id: number,
-    body: UpdateOrganizationDto,
-  ): Promise<boolean> {
-    const data = await this.organizationRepository.repository.findOneBy({ id });
-    if (!data) throw new BadRequestException(ERROR_ORGANIZATION.NOT_FOUND);
-    const exist = await this.organizationRepository.repository.count({
-      where: {
-        name: body.name,
-        id: Not(id),
-      },
-    });
-    if (exist) {
-      throw new BadRequestException(ERROR_ORGANIZATION.EXIST);
-    }
-    await this.organizationRepository.update(id, body);
-    return true;
+    return this.getPagination(conditions, query, ['users']);
   }
 
   public async delete(id: number): Promise<true> {
@@ -114,7 +72,7 @@ export class OrganizationService {
         ERROR_ORGANIZATION.CANNOT_DELETE_FOUNDATION_ORGANIZATION,
       );
     }
-    const data = await this.organizationRepository.repository.findBy({ id });
+    const data = await this.organizationRepository.findBy({ id });
     if (!data) {
       throw new BadRequestException(ERROR_ORGANIZATION.NOT_FOUND);
     }

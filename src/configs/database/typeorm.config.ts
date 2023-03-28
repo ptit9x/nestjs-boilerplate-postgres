@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
-import { DATABASE_CONFIG } from './constant.config';
-import { PermissionEntity } from '../api/permission/permission.entity';
-import { RoleEntity } from '../api/role/role.entity';
-import { UserEntity } from '../api/user/user.entity';
-import { OrganizationEntity } from '../api/organization/organization.entity';
+import { DATABASE_CONFIG } from '../constant.config';
+import { PermissionEntity } from '../../api/permission/permission.entity';
+import { RoleEntity } from '../../api/role/role.entity';
+import { UserEntity } from '../../api/user/user.entity';
+import { OrganizationEntity } from '../../api/organization/organization.entity';
 
 export default new DataSource({
   type: 'postgres',

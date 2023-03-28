@@ -6,13 +6,18 @@
 
 ![Alt text](database.png "database design")
 
+## Requirements
+- [Docker >= 20](https://docs.docker.com/install)
+- [Node >= 18.12.1](https://nodejs.org/en/download/)
+- [Postgres SQL](https://www.postgresql.org/)
+
 ## Installation
 
 ```bash
 $ npm install
 ```
 
-## Setup database postgres:15.1
+## Setup database postgres:15
 
 ```bash
 $ docker-compose -f database_postgres.yml up

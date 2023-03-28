@@ -1,4 +1,4 @@
-import typeormConfig from '../typeorm.config';
+import typeormConfig from './typeorm.config';
 
 export const databaseProviders = [
   {

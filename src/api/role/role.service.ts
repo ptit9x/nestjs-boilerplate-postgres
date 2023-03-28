@@ -1,28 +1,27 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { DataSource, FindManyOptions, In } from 'typeorm';
-import { PermissionsService } from '../permission/permission.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { In, Repository } from 'typeorm';
 import { RoleEntity } from './role.entity';
 import { ROLES_DEFAULT } from './role.constant';
-import { RolesRepository } from './role.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PermissionEntity } from '../permission/permission.entity';
 
 @Injectable()
 export class RolesService implements OnModuleInit {
   constructor(
-    private readonly rolesRepository: RolesRepository,
-    private readonly permissionService: PermissionsService,
-    @Inject('DATABASE_CONNECTION') private dataSource: DataSource,
+    @InjectRepository(RoleEntity)
+    private readonly rolesRepository: Repository<RoleEntity>,
+    @InjectRepository(PermissionEntity)
+    private readonly permissionRepository: Repository<PermissionEntity>,
   ) {}
 
   async onModuleInit() {
-    const rolesListExisted = await this.rolesRepository.findExistedRecord();
-    if (rolesListExisted?.length) return;
+    const count = await this.rolesRepository.countBy({});
+    if (count > 0) return;
 
     for (const role of ROLES_DEFAULT) {
-      const roleExisted = await this.rolesRepository.findOneByCondition({
-        where: { name: role.name },
-      });
+      const roleExisted = await this.rolesRepository.findOneBy({ name: role.name });
       if (!roleExisted) {
-        const permissions = await this.permissionService.find({
+        const permissions = await this.permissionRepository.find({
           where: {
             name: In(role.permissions),
           },
@@ -52,14 +51,10 @@ export class RolesService implements OnModuleInit {
     if (type) {
       options.where.type = type;
     }
-    const data = await this.rolesRepository.repository.find(options);
+    const data = await this.rolesRepository.find(options);
 
     return {
       data,
     };
-  }
-
-  public findAllByConditions(conditions: FindManyOptions) {
-    return this.rolesRepository.repository.find(conditions);
   }
 }

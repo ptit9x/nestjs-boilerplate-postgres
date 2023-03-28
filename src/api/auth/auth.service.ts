@@ -12,11 +12,14 @@ import { JwtPayload } from './payloads/jwt-payload';
 import { JWT_CONFIG } from '../../configs/constant.config';
 import { ERROR_AUTH } from './auth.constant';
 import { UserEntity } from '../user/user.entity';
-import { RoleTypes, RoleStatus } from '../role/role.constant';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
@@ -75,7 +78,7 @@ export class AuthService {
     if (!id) {
       throw new InternalServerErrorException(' Invalid user id');
     }
-    const user = await this.userService.findOne({
+    const user = await this.userRepository.findOne({
       where: {
         id,
       },

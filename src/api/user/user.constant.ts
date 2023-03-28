@@ -2,7 +2,6 @@ import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
 
 export const USER_CONST = {
   MODEL_NAME: 'user',
-  MODEL_PROVIDER: 'USER_MODEL',
 };
 
 export enum UserStatus {

@@ -1,32 +1,32 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BaseService } from 'src/share/database/base.service';
+import { Repository } from 'typeorm';
 import { PERMISSIONS } from './permission.constant';
-import { PermissionsRepository } from './permission.repository';
+import { PermissionEntity } from './permission.entity';
 
 @Injectable()
-export class PermissionsService implements OnModuleInit {
-  constructor(private readonly permissionsRepository: PermissionsRepository) {}
+export class PermissionsService extends BaseService<PermissionEntity> {
+  constructor(
+    @InjectRepository(PermissionEntity)
+    private readonly permissionRepository: Repository<PermissionEntity>
+  ) {
+    super(permissionRepository);
+  }
   async onModuleInit() {
     for (const permission of Object.values(PERMISSIONS)) {
-      const pExisted = await this.permissionsRepository.repository.findOneBy({
+      const pExisted = await this.permissionRepository.findOneBy({
         name: permission,
       });
       if (!pExisted) {
-        await this.permissionsRepository.save({ name: permission });
+        await this.permissionRepository.save({ name: permission });
       }
     }
   }
 
-  public async findOneByConditions(conditions: FindOneOptions) {
-    return this.permissionsRepository.findOneByCondition(conditions);
-  }
-
-  public find(conditions: FindManyOptions) {
-    return this.permissionsRepository.repository.find(conditions);
-  }
 
   public async getPermissions() {
-    const data = await this.permissionsRepository.repository.find({});
+    const data = await this.getAll();
     return {
       data,
     };

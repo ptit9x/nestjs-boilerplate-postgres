@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RoleEntity } from '../role/role.entity';
-import { UserEntity } from '../user/user.entity';
 import { ENTITY_CONST } from './organization.constant';
 
 @Entity({ name: ENTITY_CONST.MODEL_NAME })

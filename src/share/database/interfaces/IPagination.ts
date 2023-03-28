@@ -2,7 +2,7 @@
  * @author PhongVB
  */
 export interface IPagination<T> {
-  data: T;
+  data: T[];
   page: number;
   pageSize: number;
   totalPage: number;

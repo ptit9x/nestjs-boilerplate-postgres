@@ -62,7 +62,7 @@ export class UserController {
     @Param() param: ParamIdBaseDto,
     @Body() updateDto: UpdateUserDto,
   ): Promise<any> {
-    return this.userService.updateUser(param.id, updateDto);
+    return this.userService.update(param.id, updateDto);
   }
 
   @ApiOkResponse(USER_SWAGGER_RESPONSE.GET_LIST_SUCCESS)
@@ -70,7 +70,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(PermissionGuard)
   @PermissionMetadata(PERMISSIONS.USER_READ)
-  public findUser(@Query() queryParamDto: QueryParamDto): Promise<any> {
-    return this.userService.findUser(queryParamDto);
+  public findUser(@Query() query: QueryParamDto): Promise<any> {
+    return this.userService.findUser(query);
   }
 }

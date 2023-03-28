@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from '../../configs/database/database.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PermissionsController } from './permission.controller';
-import { permissionsProvider } from './permission.provider';
-import { PermissionsRepository } from './permission.repository';
+import { PermissionEntity } from './permission.entity';
 import { PermissionsService } from './permission.service';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [TypeOrmModule.forFeature([PermissionEntity])],
   controllers: [PermissionsController],
-  providers: [
-    PermissionsService,
-    ...permissionsProvider,
-    PermissionsRepository,
-  ],
+  providers: [PermissionsService],
   exports: [PermissionsService],
 })
 export class PermissionsModule {}
