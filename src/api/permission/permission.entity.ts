@@ -6,7 +6,7 @@ import {
   // JoinTable,
   // ManyToMany,
 } from 'typeorm';
-import { PERMISSION_CONST } from '../permissions.constant';
+import { PERMISSION_CONST } from './permission.constant';
 // import { RoleEntity } from '../../../api/roles/entities/role.entity';
 
 @Entity({ name: PERMISSION_CONST.MODEL_NAME })

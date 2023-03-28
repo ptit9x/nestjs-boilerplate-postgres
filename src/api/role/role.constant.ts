@@ -1,5 +1,5 @@
 import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
-import { PERMISSIONS } from '../permissions/permissions.constant';
+import { PERMISSIONS } from '../permission/permission.constant';
 
 export const ROLE_CONST = {
   MODEL_NAME: 'role',
@@ -13,10 +13,26 @@ export enum RoleTypes {
   User = 2,
 }
 
+export enum RoleStatus {
+  ACTIVE = 1,
+  INACTIVE = 2,
+}
+
 export const ROLES_DEFAULT = [
   {
     name: 'Administrator',
-    permissions: Object.values(PERMISSIONS),
+    permissions: [PERMISSIONS.ALL],
+    isSuperAdmin: true,
+    type: RoleTypes.Admin,
+  },
+  {
+    name: 'User Manager',
+    permissions: Object.values([
+      PERMISSIONS.USER_READ,
+      PERMISSIONS.USER_CREATE,
+      PERMISSIONS.USER_EDIT,
+      PERMISSIONS.USER_DELETE,
+    ]),
     type: RoleTypes.Admin,
   },
   {

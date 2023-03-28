@@ -1,15 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import * as dayjs from 'dayjs';
-
-import { UserService } from '../../api/user/user.service';
+import { UserService } from '../user/user.service';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './payloads/jwt-payload';
 import { JWT_CONFIG } from '../../configs/constant.config';
-import { UserStatus } from '../../api/user/user.constant';
 import { ERROR_AUTH } from './auth.constant';
+import { UserEntity } from '../user/user.entity';
+import { RoleTypes, RoleStatus } from '../role/role.constant';
 
 @Injectable()
 export class AuthService {
@@ -17,50 +20,74 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
-
-  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
-    const { email, password } = loginDto;
-    const user = await this.userService.findByConditions({
-      where: {
-        email: email,
-      },
-      relations: ['roles.permissions'],
+  createAccessToken(payload: JwtPayload): Promise<string> {
+    return this.jwtService.signAsync(payload, {
+      secret: JWT_CONFIG.JWT_ACCESS_TOKEN_SECRET,
+      expiresIn: JWT_CONFIG.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
     });
+  }
 
-    const isRightPassword = bcrypt.compareSync(password, user.password);
-    if (!isRightPassword)
-      throw new BadRequestException(ERROR_AUTH.PASSWORD_INCORRECT.MESSAGE);
+  createRefreshToken({ userId }): Promise<string> {
+    return this.jwtService.signAsync(
+      { userId },
+      {
+        secret: JWT_CONFIG.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: JWT_CONFIG.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+      },
+    );
+  }
 
-    if (user.status == UserStatus.INACTIVE) {
-      throw new BadRequestException(ERROR_AUTH.USER_INACTIVE.MESSAGE);
-    }
-
-    const jwtExpiresIn = parseInt(JWT_CONFIG.EXPIRED_IN);
-    const scopes = [];
-    if (user?.roles?.length) {
-      user.roles?.forEach((role) => {
-        role?.permissions?.forEach((permission) => {
-          scopes.push(permission.name);
-        });
-      });
-    }
-
-    const isFirstTimeLogin = !user.lastLogin;
-    user.lastLogin = new Date(dayjs().format('YYYY-MM-DD HH:mm:ss'));
-    user.save();
+  async generateTokenResponse(user: UserEntity): Promise<LoginResponseDto> {
+    const refreshToken = await this.createRefreshToken({ userId: user.id });
+    await this.userService.setCurrentRefreshToken(refreshToken, user.id);
 
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      scopes,
+      fullName: user.name,
+      roles: user?.roles,
     };
+
     return {
-      accessToken: await this.jwtService.signAsync(payload, {
-        secret: JWT_CONFIG.SECRET,
-        expiresIn: jwtExpiresIn,
-      }),
-      accessTokenExpire: jwtExpiresIn,
-      isFirstTimeLogin: isFirstTimeLogin,
+      accessToken: await this.createAccessToken(payload),
+      accessTokenExpire: JWT_CONFIG.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+      refreshToken,
+      refreshTokenExpire: JWT_CONFIG.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+      isFirstTimeLogin: !user.lastLogin,
+    };
+  }
+
+  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
+    const { email, password } = loginDto;
+    const user = await this.userService.getByEmail(email);
+
+    const isRightPassword = bcrypt.compareSync(password, user?.password);
+    if (!user || !isRightPassword) {
+      throw new BadRequestException(ERROR_AUTH.PASSWORD_INCORRECT.MESSAGE);
+    }
+
+    await user.save();
+
+    return this.generateTokenResponse(user);
+  }
+
+  async refreshToken(id: string): Promise<LoginResponseDto> {
+    if (!id) {
+      throw new InternalServerErrorException(' Invalid user id');
+    }
+    const user = await this.userService.findOne({
+      where: {
+        id,
+      },
+      relations: ['roles'],
+    });
+    return this.generateTokenResponse(user);
+  }
+
+  async removeRefreshToken(userId: string) {
+    await this.userService.removeRefreshToken(userId);
+    return {
+      status: true,
     };
   }
 }

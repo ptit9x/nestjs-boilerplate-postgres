@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { PERMISSIONS } from './permissions.constant';
-import { PermissionsRepository } from './permissions.repository';
+import { PERMISSIONS } from './permission.constant';
+import { PermissionsRepository } from './permission.repository';
 
 @Injectable()
 export class PermissionsService implements OnModuleInit {

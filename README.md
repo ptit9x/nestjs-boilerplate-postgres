@@ -4,6 +4,8 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+![Alt text](database.png "database design")
+
 ## Installation
 
 ```bash

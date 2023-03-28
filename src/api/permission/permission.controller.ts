@@ -3,10 +3,10 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_CONFIG } from '../../configs/constant.config';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PermissionMetadata } from './permission.decorator';
-import { PERMISSIONS } from './permissions.constant';
-import { PermissionsGuard } from './permissions.guard';
-import { PERMISSION_SWAGGER_RESPONSE } from './permissions.constant';
-import { PermissionsService } from './permissions.service';
+import { PERMISSIONS } from './permission.constant';
+import { PermissionGuard } from './permission.guard';
+import { PERMISSION_SWAGGER_RESPONSE } from './permission.constant';
+import { PermissionsService } from './permission.service';
 
 @Controller({
   path: 'permissions',
@@ -14,7 +14,7 @@ import { PermissionsService } from './permissions.service';
 })
 @ApiTags('Permissions')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 

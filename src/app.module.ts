@@ -4,8 +4,9 @@ import { EntityModule } from './api/entity/entity.module';
 import { UserModule } from './api/user/user.module';
 import { AuthModule } from './api/auth/auth.module';
 import { LoggerMiddleware } from './share/middlewares/logger.middleware';
-import { PermissionsModule } from './api/permissions/permissions.module';
-import { RolesModule } from './api/roles/roles.module';
+import { PermissionsModule } from './api/permission/permission.module';
+import { RolesModule } from './api/role/role.module';
+import { OrganizationModule } from './api/organization/organization.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RolesModule } from './api/roles/roles.module';
     EntityModule,
     UserModule,
     AuthModule,
+    OrganizationModule,
   ],
 })
 export class AppModule {
