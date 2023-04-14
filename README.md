@@ -51,6 +51,15 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+Config [Unit Test Report](https://stackoverflow.com/questions/24825860/how-to-get-the-code-coverage-report-using-jest) to HTML in package.json
+
+```bash
+"jest": {
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"],
+}
+```
+
 ## Stay in touch
 
 - Author - [Richard Do](https://github.com/ptit9x)

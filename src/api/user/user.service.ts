@@ -12,7 +12,7 @@ import { RoleStatus, ROLES_DEFAULT, RoleTypes } from '../role/role.constant';
 import { ERROR_USER } from './user.constant';
 import { UserEntity } from './user.entity';
 import { IChangePassword } from './user.interface';
-import { BaseService } from 'src/share/database/base.service';
+import { BaseService } from '../../share/database/base.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from '../role/role.entity';
 
@@ -66,111 +66,6 @@ export class UserService extends BaseService<UserEntity> {
     return user;
   }
 
-  // async createInternalUser(user: ICreateUser) {
-  //   const userFoundByUsername = await this.userRepository.findOneByCondition({
-  //     where: {
-  //       name: user.name,
-  //     },
-  //   });
-  //   if (userFoundByUsername) {
-  //     throw new BadRequestException({
-  //       message: ERROR.USER_NAME_EXISTED.MESSAGE,
-  //       code: ERROR.USER_NAME_EXISTED.CODE,
-  //     });
-  //   }
-  //   const userFound = await this.userRepository.findOneByCondition({
-  //     where: {
-  //       email: user.email,
-  //     },
-  //   });
-  //   if (userFound) {
-  //     throw new BadRequestException({
-  //       message: ERROR.USER_EXISTED.MESSAGE,
-  //       code: ERROR.USER_EXISTED.CODE,
-  //     });
-  //   }
-
-  //   if (user.phone) {
-  //     const userFoundPhone = await this.userRepository.findOneByCondition({
-  //       where: {
-  //         phone: user.phone,
-  //       },
-  //     });
-
-  //     if (userFoundPhone) {
-  //       throw new BadRequestException({
-  //         message: ERROR.USER_PHONE_EXISTED.MESSAGE,
-  //         code: ERROR.USER_PHONE_EXISTED.CODE,
-  //       });
-  //     }
-  //   }
-  //   const password = StringUtil.genRandomString(8);
-  //   user.password = await bcrypt.hash(password, JWT_CONFIG.SALT_ROUNDS);
-  //   dayjs.extend(customParseFormat);
-  //   user.expired_date = dayjs(user.expired_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //   const newUser = await this.userRepository.save(user);
-  //   const filePath = join(__dirname, `../../../share/templates/welcome-internal.hbs`);
-  //   const source = fs.readFileSync(filePath, 'utf8').toString();
-  //   const sourceReplace = source
-  //     .replace(/<Username>/g, user.name)
-  //     .replace(/<Email>/g, user.email)
-  //     .replace(/<Password>/, password)
-  //     .replace(/<adminUrl>/g, `${MEMBER_CONFIG.urlAdminSite}/login`);
-
-  //   const template = hbs.compile(sourceReplace);
-  //   const contentHtml = template(template);
-  //   const mailOption = {
-  //     mailTo: user.email,
-  //     contentHtml: contentHtml,
-  //     subject: SEND_EMAIL_CONFIG.welComeMemberSubject,
-  //   };
-
-  //   this.sendMailService.sendMail(mailOption);
-  //   delete newUser.password;
-  //   return newUser;
-  // }
-
-  // async createMultipleUsers(users: ICreateUser[]) {
-  //   let countSuccess = 0;
-  //   let countError = 0;
-  //   const dataError = [];
-  //   const queue = new PQueue({ concurrency: 50 });
-
-  //   const queryRunner = this.dataSource.createQueryRunner();
-
-  //   await queryRunner.connect();
-  //   await queryRunner.startTransaction();
-  //   try {
-  //     for (const user of users) {
-  //       queue.add(async () => {
-  //         try {
-  //           const password = StringUtil.genRandomString(8);
-  //           user.password = await bcrypt.hash(password, JWT_CONFIG.SALT_ROUNDS);
-  //           dayjs.extend(customParseFormat);
-  //           user.expired_date = dayjs(user.expired_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //           await queryRunner.manager.save(UserEntity, user);
-  //           countSuccess++;
-  //           this.sendMailWelcome(user, password);
-  //         } catch (err) {
-  //           dataError.push(pick(user, ['email', 'name']));
-  //           countError++;
-  //         }
-  //       });
-  //     }
-  //     await queue.onIdle();
-  //     await queryRunner.commitTransaction();
-  //   } catch (err) {
-  //     await queryRunner.rollbackTransaction();
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  //   return {
-  //     totalSuccess: countSuccess,
-  //     totalError: countError,
-  //     dataError: dataError,
-  //   };
-  // }
-
   findUser(params: IPaginateParams) {
     const conditions: any = {};
     if (params.search) {
@@ -204,10 +99,11 @@ export class UserService extends BaseService<UserEntity> {
     return true;
   }
 
-  removeRefreshToken(userId: string): Promise<any> {
-    return this.userRepository.update(userId, {
+  async removeRefreshToken(userId: string): Promise<boolean> {
+    await this.userRepository.update(userId, {
       currentHashedRefreshToken: null,
     });
+    return true;
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {

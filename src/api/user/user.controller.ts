@@ -58,11 +58,12 @@ export class UserController {
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(PermissionGuard)
-  public update(
+  public async update(
     @Param() param: ParamIdBaseDto,
     @Body() updateDto: UpdateUserDto,
-  ): Promise<any> {
-    return this.userService.update(param.id, updateDto);
+  ): Promise<boolean> {
+    await this.userService.update(param.id, updateDto);
+    return true;
   }
 
   @ApiOkResponse(USER_SWAGGER_RESPONSE.GET_LIST_SUCCESS)

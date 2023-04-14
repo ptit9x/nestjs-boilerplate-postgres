@@ -1,3 +1,5 @@
+import { IRole } from 'src/api/role/role.interface';
+
 export interface IAdminPayload {
   sub: string;
   email: string;
@@ -5,11 +7,17 @@ export interface IAdminPayload {
 }
 
 export interface IUserPayload {
-  sub: number;
-  fullName: string;
-  country?: string;
-  status: string;
-  statusSeller: string;
+  id?: number | string;
+  sub?: number | string;
+  name: string;
+  email: string;
+  createdBy: string;
+  phone: string;
+  status?: string | number;
+  createdAt?: string;
+  updatedAt?: string;
+  lastLogin: string;
+  roles?: IRole[];
 }
 
 export interface IPaginateParams {

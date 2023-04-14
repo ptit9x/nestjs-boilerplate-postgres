@@ -6,7 +6,7 @@ import { PermissionMetadata } from './permission.decorator';
 import { PERMISSIONS } from './permission.constant';
 import { PermissionGuard } from './permission.guard';
 import { PERMISSION_SWAGGER_RESPONSE } from './permission.constant';
-import { PermissionsService } from './permission.service';
+import { PermissionService } from './permission.service';
 
 @Controller({
   path: 'permissions',
@@ -15,8 +15,8 @@ import { PermissionsService } from './permission.service';
 @ApiTags('Permissions')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-export class PermissionsController {
-  constructor(private readonly permissionsService: PermissionsService) {}
+export class PermissionController {
+  constructor(private readonly permissionsService: PermissionService) {}
 
   @ApiOkResponse(PERMISSION_SWAGGER_RESPONSE.GET_PERMISSION_SUCCESS)
   @Get()

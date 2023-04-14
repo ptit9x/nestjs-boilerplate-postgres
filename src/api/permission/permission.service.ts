@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/share/database/base.service';
 import { Repository } from 'typeorm';
+import { BaseService } from '../../share/database/base.service';
 import { PERMISSIONS } from './permission.constant';
 import { PermissionEntity } from './permission.entity';
 
 @Injectable()
-export class PermissionsService extends BaseService<PermissionEntity> {
+export class PermissionService extends BaseService<PermissionEntity> {
   constructor(
     @InjectRepository(PermissionEntity)
-    private readonly permissionRepository: Repository<PermissionEntity>
+    private readonly permissionRepository: Repository<PermissionEntity>,
   ) {
     super(permissionRepository);
   }
@@ -23,7 +23,6 @@ export class PermissionsService extends BaseService<PermissionEntity> {
       }
     }
   }
-
 
   public async getPermissions() {
     const data = await this.getAll();

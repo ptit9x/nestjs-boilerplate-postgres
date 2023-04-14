@@ -12,7 +12,7 @@ import { OrganizationEntity } from './organization.entity';
 import { QueryParamDto } from './dto/query-param.dto';
 import { RoleEntity } from '../role/role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/share/database/base.service';
+import { BaseService } from '../../share/database/base.service';
 import { PermissionEntity } from '../permission/permission.entity';
 
 @Injectable()

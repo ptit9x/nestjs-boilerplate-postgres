@@ -5,4 +5,8 @@ export interface IRole {
   isSuperAdmin?: boolean;
   createdBy?: string;
   status?: number;
+  permissions?: {
+    id: number;
+    name: string;
+  }[];
 }

@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionEntity } from '../permission/permission.entity';
 
 @Injectable()
-export class RolesService implements OnModuleInit {
+export class RoleService implements OnModuleInit {
   constructor(
     @InjectRepository(RoleEntity)
     private readonly rolesRepository: Repository<RoleEntity>,
@@ -19,7 +19,9 @@ export class RolesService implements OnModuleInit {
     if (count > 0) return;
 
     for (const role of ROLES_DEFAULT) {
-      const roleExisted = await this.rolesRepository.findOneBy({ name: role.name });
+      const roleExisted = await this.rolesRepository.findOneBy({
+        name: role.name,
+      });
       if (!roleExisted) {
         const permissions = await this.permissionRepository.find({
           where: {

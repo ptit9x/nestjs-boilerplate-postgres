@@ -1,9 +1,14 @@
-import { BadGatewayException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   FindManyOptions,
   FindOptionsWhere,
   Not,
   Repository,
+  UpdateResult,
 } from 'typeorm';
 import { IPaginateParams } from '../common/app.interface';
 import { IPagination } from './interfaces/IPagination';
@@ -16,8 +21,10 @@ export interface IBaseService<T> {
     params: IPaginateParams,
     relations?: string[],
   ): Promise<IPagination<T>>;
-  get(id: string | number | string[] | number[] | FindOptionsWhere<T>): Promise<T>;
-  update(id: string | number, dto: T): Promise<boolean>;
+  get(
+    id: string | number | string[] | number[] | FindOptionsWhere<T>,
+  ): Promise<T>;
+  update(id: string | number, dto: T): Promise<UpdateResult>;
   delete(id: string | number): Promise<boolean>;
   softDelete(id: string | number): Promise<boolean>;
 }
@@ -81,7 +88,9 @@ export class BaseService<T> implements IBaseService<T> {
     }
   }
 
-  get(id: string | number | string[] | number[] | FindOptionsWhere<T>): Promise<T> {
+  get(
+    id: string | number | string[] | number[] | FindOptionsWhere<T>,
+  ): Promise<T> {
     try {
       const where = { id } as FindOptionsWhere<any>;
       return <Promise<T>>this.genericRepository.findOneBy(where);
@@ -112,7 +121,11 @@ export class BaseService<T> implements IBaseService<T> {
     }
   }
 
-  async update(id: string | number, entity: any, uniqueParams?: any): Promise<boolean> {
+  async update(
+    id: string | number,
+    entity: any,
+    uniqueParams?: any,
+  ): Promise<UpdateResult> {
     try {
       const where = { id } as FindOptionsWhere<any>;
       const found = await this.genericRepository.findOneBy(where);
@@ -123,15 +136,14 @@ export class BaseService<T> implements IBaseService<T> {
         const options = {
           ...uniqueParams,
           id: Not(id),
-        }
+        };
         const exist = await this.genericRepository.countBy(options);
         if (exist) {
           throw new BadRequestException(`exist record in the database`);
         }
       }
-      
-      await this.genericRepository.update(id, entity);
-      return true;
+
+      return this.genericRepository.update(id, entity);
     } catch (error) {
       throw new BadGatewayException(error);
     }

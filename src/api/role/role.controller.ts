@@ -7,7 +7,7 @@ import { PERMISSIONS } from '../permission/permission.constant';
 import { PermissionGuard } from '../permission/permission.guard';
 import { QueryParamDto } from './dto/query-param.dto';
 import { ROLE_SWAGGER_RESPONSE } from './role.constant';
-import { RolesService } from './role.service';
+import { RoleService } from './role.service';
 
 @Controller({
   path: 'roles',
@@ -16,8 +16,8 @@ import { RolesService } from './role.service';
 @ApiTags('Roles')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-export class RolesController {
-  constructor(private readonly rolesService: RolesService) {}
+export class RoleController {
+  constructor(private readonly rolesService: RoleService) {}
 
   @ApiOkResponse(ROLE_SWAGGER_RESPONSE.GET_ADMIN_ROLE_SUCCESS)
   @Get()

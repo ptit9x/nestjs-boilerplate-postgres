@@ -62,7 +62,12 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = loginDto;
-    const user = await this.userService.getByEmail(email);
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      relations: ['roles'],
+    });
 
     const isRightPassword = bcrypt.compareSync(password, user?.password);
     if (!user || !isRightPassword) {
