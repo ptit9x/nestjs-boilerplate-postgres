@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,25 +7,29 @@ import * as bcrypt from 'bcrypt';
 import { JWT_CONFIG, DEFAULT_ADMIN_USER } from '../../configs/constant.config';
 import { IPaginateParams } from '../../share/common/app.interface';
 import { StringUtil } from '../../share/utils/string.util';
-import { DataSource, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { RoleStatus, ROLES_DEFAULT, RoleTypes } from '../role/role.constant';
-import { RolesService } from '../role/role.service';
-import { ERROR_USER, UserStatus } from './user.constant';
+import { ERROR_USER } from './user.constant';
 import { UserEntity } from './user.entity';
-import { IChangePassword, IUpdateUser } from './user.interface';
-import { UserRepository } from './user.repository';
+import { IChangePassword } from './user.interface';
+import { BaseService } from '../../share/database/base.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RoleEntity } from '../role/role.entity';
 
 @Injectable()
-export class UserService {
+export class UserService extends BaseService<UserEntity> {
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly roleService: RolesService,
-    @Inject('DATABASE_CONNECTION') private dataSource: DataSource,
-  ) {}
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
+  ) {
+    super(userRepository);
+  }
 
   async onModuleInit() {
-    const userListFound = await this.userRepository.findExistedRecord();
-    if (!userListFound?.length) {
+    const userCount = await this.userRepository.count({});
+    if (userCount === 0) {
       const uModel = new UserEntity();
       uModel.email = DEFAULT_ADMIN_USER.email;
       uModel.password = await bcrypt.hash(
@@ -34,7 +37,7 @@ export class UserService {
         JWT_CONFIG.SALT_ROUNDS,
       );
       uModel.name = DEFAULT_ADMIN_USER.name;
-      uModel.roles = await this.roleService.findAllByConditions({
+      uModel.roles = await this.roleRepository.find({
         where: {
           name: In(
             ROLES_DEFAULT.filter((r) => r.type === RoleTypes.Admin).map(
@@ -48,7 +51,7 @@ export class UserService {
   }
 
   async getByEmail(email: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOneByCondition({
+    const user = await this.userRepository.findOne({
       where: {
         email,
         roles: {
@@ -63,163 +66,24 @@ export class UserService {
     return user;
   }
 
-  async findByConditions(conditions: FindOneOptions): Promise<UserEntity> {
-    const user = await this.userRepository.findOneByCondition(conditions);
-    if (!user) {
-      throw new NotFoundException(ERROR_USER.USER_NOT_FOUND.MESSAGE);
-    }
-    return user;
-  }
-
-  async findAllByConditions(
-    conditions: FindManyOptions,
-  ): Promise<UserEntity[]> {
-    return this.userRepository.repository.find(conditions);
-  }
-
-  // async createInternalUser(user: ICreateUser) {
-  //   const userFoundByUsername = await this.userRepository.findOneByCondition({
-  //     where: {
-  //       name: user.name,
-  //     },
-  //   });
-  //   if (userFoundByUsername) {
-  //     throw new BadRequestException({
-  //       message: ERROR.USER_NAME_EXISTED.MESSAGE,
-  //       code: ERROR.USER_NAME_EXISTED.CODE,
-  //     });
-  //   }
-  //   const userFound = await this.userRepository.findOneByCondition({
-  //     where: {
-  //       email: user.email,
-  //     },
-  //   });
-  //   if (userFound) {
-  //     throw new BadRequestException({
-  //       message: ERROR.USER_EXISTED.MESSAGE,
-  //       code: ERROR.USER_EXISTED.CODE,
-  //     });
-  //   }
-
-  //   if (user.phone) {
-  //     const userFoundPhone = await this.userRepository.findOneByCondition({
-  //       where: {
-  //         phone: user.phone,
-  //       },
-  //     });
-
-  //     if (userFoundPhone) {
-  //       throw new BadRequestException({
-  //         message: ERROR.USER_PHONE_EXISTED.MESSAGE,
-  //         code: ERROR.USER_PHONE_EXISTED.CODE,
-  //       });
-  //     }
-  //   }
-  //   const password = StringUtil.genRandomString(8);
-  //   user.password = await bcrypt.hash(password, JWT_CONFIG.SALT_ROUNDS);
-  //   dayjs.extend(customParseFormat);
-  //   user.expired_date = dayjs(user.expired_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //   const newUser = await this.userRepository.save(user);
-  //   const filePath = join(__dirname, `../../../share/templates/welcome-internal.hbs`);
-  //   const source = fs.readFileSync(filePath, 'utf8').toString();
-  //   const sourceReplace = source
-  //     .replace(/<Username>/g, user.name)
-  //     .replace(/<Email>/g, user.email)
-  //     .replace(/<Password>/, password)
-  //     .replace(/<adminUrl>/g, `${MEMBER_CONFIG.urlAdminSite}/login`);
-
-  //   const template = hbs.compile(sourceReplace);
-  //   const contentHtml = template(template);
-  //   const mailOption = {
-  //     mailTo: user.email,
-  //     contentHtml: contentHtml,
-  //     subject: SEND_EMAIL_CONFIG.welComeMemberSubject,
-  //   };
-
-  //   this.sendMailService.sendMail(mailOption);
-  //   delete newUser.password;
-  //   return newUser;
-  // }
-
-  // async createMultipleUsers(users: ICreateUser[]) {
-  //   let countSuccess = 0;
-  //   let countError = 0;
-  //   const dataError = [];
-  //   const queue = new PQueue({ concurrency: 50 });
-
-  //   const queryRunner = this.dataSource.createQueryRunner();
-
-  //   await queryRunner.connect();
-  //   await queryRunner.startTransaction();
-  //   try {
-  //     for (const user of users) {
-  //       queue.add(async () => {
-  //         try {
-  //           const password = StringUtil.genRandomString(8);
-  //           user.password = await bcrypt.hash(password, JWT_CONFIG.SALT_ROUNDS);
-  //           dayjs.extend(customParseFormat);
-  //           user.expired_date = dayjs(user.expired_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //           await queryRunner.manager.save(UserEntity, user);
-  //           countSuccess++;
-  //           this.sendMailWelcome(user, password);
-  //         } catch (err) {
-  //           dataError.push(pick(user, ['email', 'name']));
-  //           countError++;
-  //         }
-  //       });
-  //     }
-  //     await queue.onIdle();
-  //     await queryRunner.commitTransaction();
-  //   } catch (err) {
-  //     await queryRunner.rollbackTransaction();
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  //   return {
-  //     totalSuccess: countSuccess,
-  //     totalError: countError,
-  //     dataError: dataError,
-  //   };
-  // }
-
-  async findUser(paginateParams: IPaginateParams) {
+  findUser(params: IPaginateParams) {
     const conditions: any = {};
-    if (paginateParams.search) {
+    if (params.search) {
       conditions.name = Like(
-        `%${StringUtil.mysqlRealEscapeString(paginateParams.search)}%`,
+        `%${StringUtil.mysqlRealEscapeString(params.search)}%`,
       );
     }
-    if (paginateParams.status) {
-      conditions.status =
-        Number(paginateParams.status) == UserStatus.ACTIVE ? 1 : 2;
+    if (params.status) {
+      conditions.status = Number(params.status);
     }
-    return this.userRepository.findAllByConditions(conditions, paginateParams, [
-      'roles',
-    ]);
-  }
-
-  public async updateUser(
-    id: string,
-    paramsUpdate: IUpdateUser,
-  ): Promise<boolean> {
-    const userFound = await this.userRepository.repository.findOneBy({ id });
-    if (!userFound) {
-      throw new NotFoundException();
-    }
-    const dataUpdate: IUpdateUser = {};
-    if (paramsUpdate.name) {
-      dataUpdate.name = paramsUpdate.name;
-    }
-
-    await this.userRepository.repository.update(id, dataUpdate);
-    return true;
+    return this.getPagination(conditions, params, ['roles']);
   }
 
   public async changePassword(
     id: string,
     paramsChangePassword: IChangePassword,
   ): Promise<boolean> {
-    const userFound = await this.userRepository.repository.findOneBy({ id });
+    const userFound = await this.userRepository.findOneBy({ id });
     const { oldPassword, newPassword } = paramsChangePassword;
     const isRightPassword = bcrypt.compareSync(oldPassword, userFound.password);
     if (!isRightPassword) {
@@ -235,14 +99,15 @@ export class UserService {
     return true;
   }
 
-  removeRefreshToken(userId: string): Promise<any> {
-    return this.userRepository.update(userId, {
+  async removeRefreshToken(userId: string): Promise<boolean> {
+    await this.userRepository.update(userId, {
       currentHashedRefreshToken: null,
     });
+    return true;
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    const user = await this.userRepository.repository.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: userId },
       select: {
         id: true,
@@ -258,14 +123,6 @@ export class UserService {
       return user;
     }
     return null;
-  }
-
-  async findOne(conditions: FindOneOptions): Promise<UserEntity> {
-    const user = await this.userRepository.repository.findOne(conditions);
-    if (!user) {
-      throw new NotFoundException(ERROR_USER.USER_NOT_FOUND);
-    }
-    return user;
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: string) {

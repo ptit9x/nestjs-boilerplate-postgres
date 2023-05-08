@@ -1,21 +1,21 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EntityModule } from './api/entity/entity.module';
 import { UserModule } from './api/user/user.module';
 import { AuthModule } from './api/auth/auth.module';
 import { LoggerMiddleware } from './share/middlewares/logger.middleware';
-import { PermissionsModule } from './api/permission/permission.module';
-import { RolesModule } from './api/role/role.module';
+import { PermissionModule } from './api/permission/permission.module';
+import { RoleModule } from './api/role/role.module';
 import { OrganizationModule } from './api/organization/organization.module';
+import { DatabaseModule } from './configs/database/database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    PermissionsModule,
-    RolesModule,
-    EntityModule,
+    DatabaseModule,
+    PermissionModule,
+    RoleModule,
     UserModule,
     AuthModule,
     OrganizationModule,

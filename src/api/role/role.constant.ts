@@ -42,6 +42,11 @@ export const ROLES_DEFAULT = [
   },
 ];
 
+export const MOCK_DATA = {
+  id: '1',
+  name: 'BO Admin',
+};
+
 export const ROLE_SWAGGER_RESPONSE = {
   GET_ADMIN_ROLE_SUCCESS: swaggerSchemaExample(
     {

@@ -8,5 +8,5 @@ export class QueryParamDto extends QueryParamBaseDto {
   @IsString()
   @IsOptional()
   @Transform(({ value }) => value.trim())
-  status: string;
+  status?: string;
 }

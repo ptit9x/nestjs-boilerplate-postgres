@@ -11,11 +11,6 @@ export interface ICreateUser {
   postalCode?: number;
 }
 
-export interface IUpdateUser {
-  name?: string;
-  status?: UserStatus;
-}
-
 export interface IChangePassword {
   oldPassword: string;
   newPassword: string;

@@ -61,7 +61,9 @@ export class OrganizationController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @PermissionMetadata(PERMISSIONS.ORGANIZATION_EDIT)
   update(@Param() param: ParamIdBaseDto, @Body() body: UpdateOrganizationDto) {
-    return this.organizationService.update(+param.id, body);
+    return this.organizationService.update(+param.id, body, {
+      name: body.name,
+    });
   }
 
   @Delete(':id')

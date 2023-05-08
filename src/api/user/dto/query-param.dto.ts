@@ -37,8 +37,8 @@ export class QueryParamDto {
   search: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
   @Transform(({ value }) => value.trim())
   status: string;
 }

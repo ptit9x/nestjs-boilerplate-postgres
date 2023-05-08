@@ -40,21 +40,21 @@ export const ROLES_ORGANIZATION_DEFAULT = [
   },
 ];
 
+export const MOCK_ORG = {
+  id: '1',
+  createdAt: '2022-12-21T03:49:53.770Z',
+  updatedAt: '2022-12-21T03:49:53.770Z',
+  organizationName: "huynhdn's organization",
+  address: 'FLC 36 Phamj Hùng, HN, Việt Nam',
+  logoUrl:
+    'https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg',
+  contact: '+84374539633',
+};
+
 export const SWAGGER_RESPONSE = {
   SEARCH_SUCCESS: swaggerSchemaExample(
     {
-      data: [
-        {
-          id: '1',
-          createdAt: '2022-12-21T03:49:53.770Z',
-          updatedAt: '2022-12-21T03:49:53.770Z',
-          organizationName: "huynhdn's organization",
-          address: 'FLC 36 Phamj Hùng, HN, Việt Nam',
-          logoUrl:
-            'https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg',
-          contact: '+84374539633',
-        },
-      ],
+      data: [MOCK_ORG],
       total: 1,
       page: 1,
       pageSize: 100,

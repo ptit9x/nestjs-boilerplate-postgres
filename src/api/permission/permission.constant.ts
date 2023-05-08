@@ -28,6 +28,11 @@ export const PERMISSIONS = {
   PERMISSION_READ: 'permission:read',
 };
 
+export const MOCK_DATA = {
+  id: 1,
+  name: 'user:create',
+};
+
 export const PERMISSION_SWAGGER_RESPONSE = {
   GET_PERMISSION_SUCCESS: swaggerSchemaExample(
     {
