@@ -6,14 +6,13 @@ import { JwtAuthGuard } from '../src/api/auth/guards/jwt.guard';
 import { MOCK_USER, MOCK_USER_WITH_ROLE } from '../src/api/user/user.constant';
 import { UserEntity } from '../src/api/user/user.entity';
 import { UserModule } from '../src/api/user/user.module';
-import { UserService } from '../src/api/user/user.service';
 import { RoleEntity } from '../src/api/role/role.entity';
 import { stubUserGuard } from './stubs';
 
 describe('User', () => {
   let appSuccess: INestApplication;
   let appFailure: INestApplication;
-  let userService = {
+  const userService = {
     getByEmail: () => MOCK_USER_WITH_ROLE,
   };
   const mockedRepo = {

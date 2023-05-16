@@ -14,7 +14,7 @@ import { RoleEntity } from '../src/api/role/role.entity';
 describe('Auth', () => {
   let appSuccess: INestApplication;
   let appFailure: INestApplication;
-  let authService = {
+  const authService = {
     login: () => ({
       accessToken: 'xxxxx',
       accessTokenExpire: JWT_CONFIG.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
