@@ -1,16 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UserStatus, USER_CONST } from './user.constant';
 import { BaseEntity } from '../../share/database/base.entity';
 import { RoleEntity } from '../role/role.entity';
 import { OrganizationEntity } from '../organization/organization.entity';
+import { UserProviderEntity } from './user-provider.entity';
 @Entity({ name: USER_CONST.MODEL_NAME })
 export class UserEntity extends BaseEntity {
   @Column({ length: 255, unique: true })
@@ -57,4 +51,7 @@ export class UserEntity extends BaseEntity {
   })
   @Exclude()
   currentHashedRefreshToken?: string;
+
+  @OneToMany(() => UserProviderEntity, (provider) => provider.user)
+  userProviders: UserProviderEntity[];
 }

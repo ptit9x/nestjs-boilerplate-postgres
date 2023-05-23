@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -13,15 +14,21 @@ import { JWT_CONFIG } from '../../configs/constant.config';
 import { ERROR_AUTH } from './auth.constant';
 import { UserEntity } from '../user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { IGoogleProfile } from './auth.interface';
+import { UserProviderEntity } from '../user/user-provider.entity';
+import { ProviderType } from '../user/user.constant';
+import { RoleTypes } from '../role/role.constant';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private dataSource: DataSource,
   ) {}
   createAccessToken(payload: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
@@ -97,5 +104,50 @@ export class AuthService {
     return {
       status: true,
     };
+  }
+
+  async findOrCreateUserFromGoogleProfile(
+    profile: IGoogleProfile,
+  ): Promise<UserEntity> {
+    const { id, emails, displayName } = profile;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      let user = await this.userService.getByEmail(emails[0].value);
+      if (!user) {
+        await this.userService.createUser(
+          {
+            name: displayName,
+            email: emails[0].value,
+          },
+          RoleTypes.User,
+        );
+      }
+      const uProvider = await queryRunner.manager
+        .createQueryBuilder(UserProviderEntity, 'upe')
+        .where('upe.providerKey = :providerKey AND upe.type = :type', {
+          providerKey: id,
+          type: ProviderType.GOOGLE,
+        })
+        .getOne();
+      if (!uProvider) {
+        const uProviderModel = new UserProviderEntity();
+        uProviderModel.providerKey = id;
+        uProviderModel.user = user;
+        await queryRunner.manager.save(uProviderModel);
+      }
+
+      await queryRunner.commitTransaction();
+
+      return user;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error?.message);
+      throw new BadRequestException(error?.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
