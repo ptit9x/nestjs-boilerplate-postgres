@@ -31,34 +31,11 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    description: 'expired_date',
+    description: 'password',
   })
   @IsString()
-  @MaxLength(100)
-  expired_date: string;
-
-  @ApiPropertyOptional({
-    description: 'country',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  country: string;
-
-  @ApiPropertyOptional({
-    description: 'city',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  city: string;
-
-  @ApiPropertyOptional({
-    description: 'postalCode',
-  })
-  @IsOptional()
-  @IsInt()
-  postalCode: number;
+  @MaxLength(8)
+  password?: string;
 
   @ApiPropertyOptional({
     description: 'phone',
@@ -67,5 +44,5 @@ export class CreateUserDto {
   @IsNumberString()
   @MinLength(8)
   @MaxLength(15)
-  phone: string;
+  phone?: string;
 }

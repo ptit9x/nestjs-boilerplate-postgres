@@ -3,6 +3,7 @@ import { swaggerSchemaExample } from '../../share/utils/swagger_schema';
 
 export const USER_CONST = {
   MODEL_NAME: 'user',
+  MODEL_PROVIDER_NAME: 'user_provider',
 };
 
 export enum UserStatus {
@@ -117,3 +118,10 @@ export const USER_SWAGGER_RESPONSE = {
   UPDATE_SUCCESS: swaggerSchemaExample('', 'Update success'),
   GET_SUCCESS: swaggerSchemaExample(MOCK_USER_WITH_ROLE, 'Get success'),
 };
+
+export enum ProviderType {
+  GOOGLE = 1,
+  FACEBOOK = 2,
+  TWITTER = 3,
+  GITHUB = 4,
+}

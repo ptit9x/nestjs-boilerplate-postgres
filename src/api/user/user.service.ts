@@ -15,6 +15,8 @@ import { IChangePassword } from './user.interface';
 import { BaseService } from '../../share/database/base.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from '../role/role.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { generateRandomString } from 'src/share/utils';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -30,24 +32,29 @@ export class UserService extends BaseService<UserEntity> {
   async onModuleInit() {
     const userCount = await this.userRepository.count({});
     if (userCount === 0) {
-      const uModel = new UserEntity();
-      uModel.email = DEFAULT_ADMIN_USER.email;
-      uModel.password = await bcrypt.hash(
-        DEFAULT_ADMIN_USER.password,
-        JWT_CONFIG.SALT_ROUNDS,
-      );
-      uModel.name = DEFAULT_ADMIN_USER.name;
-      uModel.roles = await this.roleRepository.find({
-        where: {
-          name: In(
-            ROLES_DEFAULT.filter((r) => r.type === RoleTypes.Admin).map(
-              (r) => r.name,
-            ),
-          ),
-        },
-      });
-      await this.userRepository.save(uModel);
+      await this.createUser(DEFAULT_ADMIN_USER, RoleTypes.Admin);
     }
+  }
+
+  async createUser(
+    body: CreateUserDto,
+    roleType: RoleTypes,
+  ): Promise<UserEntity> {
+    const uModel = new UserEntity();
+    uModel.email = body.email;
+    uModel.password = await bcrypt.hash(
+      body.password ? body.password : generateRandomString(10),
+      JWT_CONFIG.SALT_ROUNDS,
+    );
+    uModel.name = body.name;
+    uModel.roles = await this.roleRepository.find({
+      where: {
+        name: In(
+          ROLES_DEFAULT.filter((r) => r.type === roleType).map((r) => r.name),
+        ),
+      },
+    });
+    return this.userRepository.save(uModel);
   }
 
   async getByEmail(email: string): Promise<UserEntity> {
