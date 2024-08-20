@@ -33,7 +33,6 @@ describe('UserService', () => {
     };
     const mockRoleRepo = {};
     const user: TestingModule = await Test.createTestingModule({
-      controllers: [UserService],
       providers: [
         UserService,
         {

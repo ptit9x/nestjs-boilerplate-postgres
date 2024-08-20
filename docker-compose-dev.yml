@@ -1,13 +1,11 @@
-version: '3.5'
-
 services:
-  postgres:
-    container_name: postgres_container
-    image: postgres:15-alpine
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:16-alpine
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-dev}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-abcd1234}
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-abcd1234}
       PGDATA: /data/postgres
     volumes:
        - ./data/postgres:/data/postgres
@@ -30,6 +28,19 @@ services:
   #   networks:
   #     - common
   #   restart: unless-stopped
+
+  be_api:
+    container_name: 'be_api'
+    hostname: 'be_api'
+    image: 'huynhdn/nest-postgres-boilerplate:1.0'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    # env_file: ".env"
+    depends_on:
+      - postgres_db
 
 networks:
   common:
