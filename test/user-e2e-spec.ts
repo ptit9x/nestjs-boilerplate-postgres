@@ -16,8 +16,8 @@ describe('User', () => {
     getByEmail: () => MOCK_USER_WITH_ROLE,
   };
   const mockedRepo = {
-    findOne: jest.fn((id) => Promise.resolve(MOCK_USER_WITH_ROLE)),
-    findOneBy: jest.fn((id) =>
+    findOne: jest.fn(() => Promise.resolve(MOCK_USER_WITH_ROLE)),
+    findOneBy: jest.fn(() =>
       Promise.resolve({
         ...MOCK_USER,
         password:
@@ -25,11 +25,11 @@ describe('User', () => {
         save: () => true,
       }),
     ),
-    save: jest.fn((id) => Promise.resolve(true)),
-    count: jest.fn((params) => Promise.resolve(1)),
-    countBy: jest.fn((params) => Promise.resolve(1)),
-    update: jest.fn((params) => Promise.resolve(true)),
-    findAndCount: jest.fn((params) => Promise.resolve([MOCK_USER, 1])),
+    save: jest.fn(() => Promise.resolve(true)),
+    count: jest.fn(() => Promise.resolve(1)),
+    countBy: jest.fn(() => Promise.resolve(1)),
+    update: jest.fn(() => Promise.resolve(true)),
+    findAndCount: jest.fn(() => Promise.resolve([MOCK_USER, 1])),
   };
 
   beforeAll(async () => {

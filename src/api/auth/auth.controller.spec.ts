@@ -23,11 +23,11 @@ describe('AuthController', () => {
   };
   const mockUserService = {
     getByEmail: jest.fn(() => MOCK_USER_RESPONSE),
-    setCurrentRefreshToken: jest.fn((_token: string) => Promise.resolve(true)),
-    removeRefreshToken: jest.fn((_userId: string) => Promise.resolve(true)),
+    setCurrentRefreshToken: jest.fn(() => Promise.resolve(true)),
+    removeRefreshToken: jest.fn(() => Promise.resolve(true)),
   };
   const mockJwtService = {
-    signAsync: jest.fn((_token: string) => Promise.resolve('xxx')),
+    signAsync: jest.fn(() => Promise.resolve('xxx')),
   };
 
   beforeEach(async () => {

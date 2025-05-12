@@ -22,11 +22,11 @@ describe('AuthService', () => {
   };
   const mockUserService = {
     getByEmail: jest.fn(() => Promise.resolve(MOCK_USER_RESPONSE)),
-    setCurrentRefreshToken: jest.fn((t: string) => Promise.resolve(true)),
-    removeRefreshToken: jest.fn((id: string) => Promise.resolve(true)),
+    setCurrentRefreshToken: jest.fn(() => Promise.resolve(true)),
+    removeRefreshToken: jest.fn(() => Promise.resolve(true)),
   };
   const mockJwtService = {
-    signAsync: jest.fn((t: string) => Promise.resolve('xxx')),
+    signAsync: jest.fn(() => Promise.resolve('xxx')),
   };
 
   beforeEach(async () => {

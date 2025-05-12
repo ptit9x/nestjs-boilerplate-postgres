@@ -18,7 +18,7 @@ export class LoginDto {
   })
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) => value?.trim())
   @MaxLength(15)
   password: string;
 }

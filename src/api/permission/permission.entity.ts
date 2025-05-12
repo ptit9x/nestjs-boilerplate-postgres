@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 import { PERMISSION_CONST } from './permission.constant';
 
 @Entity({ name: PERMISSION_CONST.MODEL_NAME })

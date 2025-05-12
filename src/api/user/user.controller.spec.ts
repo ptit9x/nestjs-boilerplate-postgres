@@ -76,8 +76,8 @@ describe('UserController', () => {
         { id: '1' },
         {
           name: 'huynhdn',
-          phone: "0374539633",
-          avatar: "",
+          phone: '0374539633',
+          avatar: '',
           status: UserStatus.ACTIVE,
         },
       );

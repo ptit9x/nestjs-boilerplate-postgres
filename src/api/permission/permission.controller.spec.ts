@@ -10,7 +10,7 @@ describe('PermissionController', () => {
 
   beforeEach(async () => {
     const mockedRepo = {
-      find: jest.fn((_params) => Promise.resolve([MOCK_DATA])),
+      find: jest.fn(() => Promise.resolve([MOCK_DATA])),
     };
     const permission: TestingModule = await Test.createTestingModule({
       controllers: [PermissionController],

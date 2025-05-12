@@ -9,7 +9,7 @@
 ## Requirements
 
 - [Docker >= 26](https://docs.docker.com/install)
-- [Node >= 20.16](https://nodejs.org/en/download/)
+- [Node >= 22](https://nodejs.org/en/download/)
 - [Postgres SQL](https://www.postgresql.org/)
 
 ## Installation
@@ -84,6 +84,20 @@ Config [Unit Test Report](https://stackoverflow.com/questions/24825860/how-to-ge
 
 - Author - [Richard Do](https://github.com/ptit9x)
 
-## License
+## Using ruler (IDE rules automation)
 
-Nest is [MIT licensed](LICENSE).
+Generate rules for IDE to use [Ruler](https://github.com/intellectronica/ruler)
+
+Step: 
+- Define rules in the AGENTS.md
+- Use a modern IDE (VS Code, WebStorm) or an editor that integrates with your workspace.
+- Run command 
+
+```bash
+ruler init 
+```
+
+- If you use Cursor, run it
+```bash
+ruler apply --agents cursor --no-mcp
+```
