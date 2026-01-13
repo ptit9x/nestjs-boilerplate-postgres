@@ -38,7 +38,7 @@ export class BaseService<T> implements IBaseService<T> {
 
   getAll(): Promise<T[]> {
     try {
-      return <Promise<T[]>>this.genericRepository.find();
+      return this.genericRepository.find();
     } catch (error) {
       throw new BadGatewayException(error);
     }
@@ -68,9 +68,8 @@ export class BaseService<T> implements IBaseService<T> {
         };
       }
 
-      const [data, totalItem] = await this.genericRepository.findAndCount(
-        options,
-      );
+      const [data, totalItem] =
+        await this.genericRepository.findAndCount(options);
 
       const totalPage =
         totalItem % pageSize === 0
@@ -93,7 +92,7 @@ export class BaseService<T> implements IBaseService<T> {
   ): Promise<T> {
     try {
       const where = { id } as FindOptionsWhere<any>;
-      return <Promise<T>>this.genericRepository.findOneBy(where);
+      return this.genericRepository.findOneBy(where);
     } catch (error) {
       throw new BadGatewayException(error);
     }

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OrganizationEntity } from '../../api/organization/organization.entity';
 import { PermissionEntity } from '../../api/permission/permission.entity';
 import { RoleEntity } from '../../api/role/role.entity';
 import { UserEntity } from '../../api/user/user.entity';
@@ -17,16 +16,11 @@ import { databaseProviders } from './database.providers';
         username: DATABASE_CONFIG.username,
         password: DATABASE_CONFIG.password,
         database: DATABASE_CONFIG.database,
-        entities: [
-          PermissionEntity,
-          RoleEntity,
-          UserEntity,
-          OrganizationEntity,
-        ],
+        entities: [PermissionEntity, RoleEntity, UserEntity],
         migrations: [__dirname + '/../../migrations/*.ts'],
         autoLoadEntities: true,
         synchronize: false,
-        logging: DATABASE_CONFIG.logging,
+        logging: true || DATABASE_CONFIG.logging,
       }),
     }),
   ],

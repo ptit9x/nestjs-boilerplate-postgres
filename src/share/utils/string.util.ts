@@ -15,7 +15,7 @@ export class StringUtil {
       .slice(0, length);
   }
 
-  public static mysqlRealEscapeString(str) {
+  public static mysqlRealEscapeString(str: string): string {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%\_]/g, function (char) {
       switch (char) {
         case '\0':

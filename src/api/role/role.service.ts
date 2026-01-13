@@ -31,7 +31,6 @@ export class RoleService implements OnModuleInit {
         const rModel = new RoleEntity();
         rModel.name = role.name;
         rModel.type = role.type;
-        rModel.isSuperAdmin = role.isSuperAdmin || false;
         rModel.permissions = permissions;
         await this.rolesRepository.save(rModel);
       }

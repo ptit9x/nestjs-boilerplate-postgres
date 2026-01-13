@@ -11,8 +11,8 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const mockedRepo = {
-      findOne: jest.fn((id) => Promise.resolve(MOCK_USER_WITH_ROLE)),
-      findOneBy: jest.fn((id) =>
+      findOne: jest.fn((_id) => Promise.resolve(MOCK_USER_WITH_ROLE)),
+      findOneBy: jest.fn((_id) =>
         Promise.resolve({
           ...MOCK_USER,
           password:
@@ -76,6 +76,8 @@ describe('UserController', () => {
         { id: '1' },
         {
           name: 'huynhdn',
+          phone: '0374539633',
+          avatar: '',
           status: UserStatus.ACTIVE,
         },
       );

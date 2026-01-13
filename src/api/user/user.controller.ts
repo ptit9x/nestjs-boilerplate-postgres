@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Put,
   HttpCode,
   HttpStatus,
   Param,
@@ -10,8 +11,15 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
+  Post,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { API_CONFIG } from '../../configs/constant.config';
 import { IAdminPayload } from '../../share/common/app.interface';
 import { GetUser } from '../../share/decorator/get-user.decorator';
@@ -25,6 +33,8 @@ import { ChangeUserPasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import { USER_SWAGGER_RESPONSE } from './user.constant';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
+import { AUTH_SWAGGER_RESPONSE } from '../auth/auth.constant';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller({
   version: [API_CONFIG.VERSION_V1],
@@ -34,14 +44,28 @@ import { UserService } from './user.service';
 @ApiTags('User')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiBadRequestResponse(AUTH_SWAGGER_RESPONSE.BAD_REQUEST_EXCEPTION)
+@ApiInternalServerErrorResponse(AUTH_SWAGGER_RESPONSE.INTERNAL_SERVER_EXCEPTION)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOkResponse(USER_SWAGGER_RESPONSE.GET_LIST_SUCCESS)
+  @ApiOkResponse(USER_SWAGGER_RESPONSE.GET_SUCCESS)
   @Get('info')
   @HttpCode(HttpStatus.OK)
   public getByEmail(@GetUser('email') email: string): Promise<UserEntity> {
     return this.userService.getByEmail(email);
+  }
+
+  @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
+  @Put('info')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(PermissionGuard)
+  public async updateProfile(
+    @GetUser('sub') id: string,
+    @Body() updateDto: UpdateUserDto,
+  ): Promise<boolean> {
+    await this.userService.update(id, updateDto);
+    return true;
   }
 
   @ApiOkResponse(USER_SWAGGER_RESPONSE.UPDATE_SUCCESS)
@@ -73,5 +97,20 @@ export class UserController {
   @PermissionMetadata(PERMISSIONS.USER_READ)
   public findUser(@Query() query: QueryParamDto): Promise<any> {
     return this.userService.findUser(query);
+  }
+
+  @ApiOkResponse(USER_SWAGGER_RESPONSE.CREATE_SUCCESS)
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  createUser(@Body() body: CreateUserDto) {
+    return this.userService.createUser(body);
+  }
+
+  @ApiOkResponse(USER_SWAGGER_RESPONSE.GET_SUCCESS)
+  @Get(':id')
+  @UseGuards(PermissionGuard)
+  @PermissionMetadata(PERMISSIONS.USER_READ)
+  public get(@Param() param: ParamIdBaseDto): Promise<UserEntity> {
+    return this.userService.get(param.id);
   }
 }

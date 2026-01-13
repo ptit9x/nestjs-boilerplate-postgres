@@ -30,3 +30,22 @@ export const DEFAULT_ADMIN_USER = {
   password: process.env.DEFAULT_ADMIN_PASSWORD,
   name: process.env.DEFAULT_ADMIN_NAME || 'Administrator',
 };
+
+export const AWS_CONFIG = {
+  BUCKET_ID: process.env.AWS_BUCKET_ID || '',
+  KEY_ID: process.env.AWS_KEY_ID || '',
+  ACCESS_KEY: process.env.AWS_ACCESS_KEY || '',
+  REGION: process.env.AWS_REGION || 'ap-southeast-1',
+  SOURCE_MAIL: process.env.AWS_SOURCE_MAIL || '',
+  SMTP_USER: process.env.AWS_SMTP_USER || '',
+  SMTP_PASS: process.env.AWS_SMTP_PASS || '',
+  SMTP_URL: process.env.AWS_SMTP_URL || '',
+};
+
+export const MINIO_CONFIG = {
+  ENDPOINT: process.env.MINIO_ENDPOINT || 'http://localhost:9000',
+  HOST: process.env.HOST || 'localhost',
+  BUCKET_NAME: process.env.MINIO_BUCKET_NAME || '',
+  ACCESS_KEY: process.env.MINIO_ACCESS_KEY || '',
+  SECRET_KEY: process.env.MINIO_SECRET_KEY || '',
+};

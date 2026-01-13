@@ -7,7 +7,8 @@ export const USER_CONST = {
 
 export enum UserStatus {
   ACTIVE = 1,
-  INACTIVE = 0,
+  INACTIVE = 2,
+  BLOCKED = 3,
 }
 
 export const ERROR_USER = {
@@ -52,55 +53,54 @@ export const MOCK_USER: IUserPayload = {
   status: 1,
   createdBy: null,
   phone: null,
+  roleId: 1,
   lastLogin: '2023-03-02T04:29:20.000Z',
 };
 export const MOCK_USER_WITH_ROLE: IUserPayload = {
   ...MOCK_USER,
-  roles: [
-    {
-      id: 1,
-      name: 'Administrator',
-      type: 1,
-      permissions: [
-        {
-          id: 1,
-          name: 'user:create',
-        },
-        {
-          id: 2,
-          name: 'user:read',
-        },
-        {
-          id: 3,
-          name: 'user:update',
-        },
-        {
-          id: 4,
-          name: 'user:delete',
-        },
-        {
-          id: 5,
-          name: 'role:create',
-        },
-        {
-          id: 6,
-          name: 'role:read',
-        },
-        {
-          id: 7,
-          name: 'role:update',
-        },
-        {
-          id: 8,
-          name: 'role:delete',
-        },
-        {
-          id: 9,
-          name: 'permission:read',
-        },
-      ],
-    },
-  ],
+  role: {
+    id: 1,
+    name: 'Administrator',
+    type: 1,
+    permissions: [
+      {
+        id: 1,
+        name: 'user:create',
+      },
+      {
+        id: 2,
+        name: 'user:read',
+      },
+      {
+        id: 3,
+        name: 'user:update',
+      },
+      {
+        id: 4,
+        name: 'user:delete',
+      },
+      {
+        id: 5,
+        name: 'role:create',
+      },
+      {
+        id: 6,
+        name: 'role:read',
+      },
+      {
+        id: 7,
+        name: 'role:update',
+      },
+      {
+        id: 8,
+        name: 'role:delete',
+      },
+      {
+        id: 9,
+        name: 'permission:read',
+      },
+    ],
+  },
 };
 
 export const USER_SWAGGER_RESPONSE = {
@@ -114,6 +114,7 @@ export const USER_SWAGGER_RESPONSE = {
     },
     'List success',
   ),
+  CREATE_SUCCESS: swaggerSchemaExample(MOCK_USER, 'Update success'),
   UPDATE_SUCCESS: swaggerSchemaExample('', 'Update success'),
   GET_SUCCESS: swaggerSchemaExample(MOCK_USER_WITH_ROLE, 'Get success'),
 };

@@ -9,11 +9,6 @@ export const ERROR_AUTH = {
     CODE: 'us00002',
     MESSAGE: 'Username or password is invalid!',
   },
-  USER_DEACTIVE: {
-    CODE: 'us00003',
-    MESSAGE:
-      'This account has been deactivated. Please contact the organization admin to reactivate your account.',
-  },
   USER_LOCKED: {
     CODE: 'us00004',
     MESSAGE:

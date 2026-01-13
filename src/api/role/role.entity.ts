@@ -5,11 +5,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { RoleStatus, RoleTypes, ROLE_CONST } from './role.constant';
 import { PermissionEntity } from '../permission/permission.entity';
 import { UserEntity } from '../user/user.entity';
-import { OrganizationEntity } from '../organization/organization.entity';
 
 @Entity({ name: ROLE_CONST.MODEL_NAME })
 export class RoleEntity extends BaseEntity {
@@ -25,9 +25,6 @@ export class RoleEntity extends BaseEntity {
   @Column({ type: 'bigint', name: 'created_by', nullable: true })
   createdBy: string;
 
-  @Column({ type: 'boolean', name: 'is_super_admin', default: false })
-  isSuperAdmin: boolean;
-
   @Column({ type: 'enum', enum: RoleStatus, default: RoleStatus.ACTIVE })
   status: number;
 
@@ -39,14 +36,6 @@ export class RoleEntity extends BaseEntity {
   })
   permissions: PermissionEntity[];
 
-  @ManyToMany(() => OrganizationEntity)
-  @JoinTable({
-    name: 'organization_role',
-    joinColumn: { name: 'role_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'organization_id' },
-  })
-  organizations: OrganizationEntity[];
-
-  @ManyToMany(() => UserEntity)
+  @OneToMany(() => UserEntity, (user) => user.role)
   users: UserEntity[];
 }

@@ -7,14 +7,16 @@ import * as bcrypt from 'bcrypt';
 import { JWT_CONFIG, DEFAULT_ADMIN_USER } from '../../configs/constant.config';
 import { IPaginateParams } from '../../share/common/app.interface';
 import { StringUtil } from '../../share/utils/string.util';
-import { In, Like, Repository } from 'typeorm';
-import { RoleStatus, ROLES_DEFAULT, RoleTypes } from '../role/role.constant';
+import { Like, Repository } from 'typeorm';
+import { RoleTypes, RoleName, RoleStatus } from '../role/role.constant';
 import { ERROR_USER } from './user.constant';
 import { UserEntity } from './user.entity';
 import { IChangePassword } from './user.interface';
 import { BaseService } from '../../share/database/base.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from '../role/role.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ERROR_AUTH } from '../auth/auth.constant';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -37,14 +39,9 @@ export class UserService extends BaseService<UserEntity> {
         JWT_CONFIG.SALT_ROUNDS,
       );
       uModel.name = DEFAULT_ADMIN_USER.name;
-      uModel.roles = await this.roleRepository.find({
-        where: {
-          name: In(
-            ROLES_DEFAULT.filter((r) => r.type === RoleTypes.Admin).map(
-              (r) => r.name,
-            ),
-          ),
-        },
+      uModel.role = await this.roleRepository.findOneBy({
+        type: RoleTypes.Admin,
+        name: RoleName.Administrator,
       });
       await this.userRepository.save(uModel);
     }
@@ -54,11 +51,11 @@ export class UserService extends BaseService<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
         email,
-        roles: {
+        role: {
           status: RoleStatus.ACTIVE,
         },
       },
-      relations: ['roles.permissions', 'organizations'],
+      relations: ['role.permissions'],
     });
     if (!user) {
       throw new NotFoundException(ERROR_USER.USER_NOT_FOUND.MESSAGE);
@@ -76,7 +73,7 @@ export class UserService extends BaseService<UserEntity> {
     if (params.status) {
       conditions.status = Number(params.status);
     }
-    return this.getPagination(conditions, params, ['roles']);
+    return this.getPagination(conditions, params, ['role']);
   }
 
   public async changePassword(
@@ -130,5 +127,35 @@ export class UserService extends BaseService<UserEntity> {
     await this.userRepository.update(userId, {
       currentHashedRefreshToken,
     });
+  }
+
+  async createUser(data: CreateUserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({
+      email: data?.email?.toLowerCase(),
+    });
+
+    if (user) {
+      throw new NotFoundException(ERROR_AUTH.USER_NAME_EXISTED.MESSAGE);
+    }
+
+    const passwordHash = await bcrypt.hash(
+      data.password,
+      JWT_CONFIG.SALT_ROUNDS,
+    );
+    const role = await this.roleRepository.findOneBy({
+      type: RoleTypes.Admin,
+      status: RoleStatus.ACTIVE,
+      name: RoleName.Administrator,
+    });
+
+    const uModel = new UserEntity();
+    uModel.email = data.email.toLowerCase();
+    uModel.password = passwordHash;
+    uModel.name = data.name;
+    uModel.role = role;
+    if (data.phone) {
+      uModel.phone = data.phone;
+    }
+    return this.userRepository.save(uModel);
   }
 }

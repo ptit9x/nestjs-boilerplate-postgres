@@ -9,10 +9,11 @@ import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../user/user.entity';
+import { RoleEntity } from '../role/role.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, RoleEntity]),
     PassportModule,
     JwtModule.register({
       secret: JWT_CONFIG.JWT_ACCESS_TOKEN_SECRET,

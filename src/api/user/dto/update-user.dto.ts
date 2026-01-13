@@ -16,8 +16,26 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  @MaxLength(100)
+  @MaxLength(255)
   name: string;
+
+  @ApiPropertyOptional({
+    description: 'avatar url image',
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @MaxLength(255)
+  avatar: string;
+
+  @ApiPropertyOptional({
+    description: 'phone number',
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @MaxLength(100)
+  phone: string;
 
   @ApiPropertyOptional({
     description: 'status',

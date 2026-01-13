@@ -4,54 +4,65 @@ export class CreateRoles1661161731016 implements MigrationInterface {
   name = 'CreateRoles1661161731016';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create role_status_enum type if not exists
     await queryRunner.query(`
-      CREATE TYPE "role_status_enum" AS ENUM (
-        '1',
-        '2');
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role_status_enum') THEN
+          CREATE TYPE role_status_enum AS ENUM ('1', '2');
+        END IF;
+      END$$;
     `);
+    // Create role_type_enum type if not exists
     await queryRunner.query(`
-      CREATE TYPE "role_type_enum" AS ENUM (
-        '1',
-        '2',
-        '3');
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role_type_enum') THEN
+          CREATE TYPE role_type_enum AS ENUM ('1', '2', '3', '4', '5');
+        END IF;
+      END$$;
     `);
+    // Create role table
     await queryRunner.query(`
-      CREATE TABLE "role" (
-        id serial4 NOT NULL,
-        "name" varchar(255) NOT NULL,
-        "type" "role_type_enum" NOT NULL,
-        created_by int8 NULL,
-        is_super_admin bool NOT NULL DEFAULT false,
-        status "role_status_enum" NOT NULL DEFAULT '1'::role_status_enum,
-        CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY (id),
-        CONSTRAINT "UQ_ae4578dcaed5adff96595e61660" UNIQUE (name)
+      CREATE TABLE IF NOT EXISTS role (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        type role_type_enum NOT NULL,
+        created_by BIGINT,
+        status role_status_enum NOT NULL DEFAULT '1'
       );
     `);
+    // Create role_permission table
     await queryRunner.query(`
-      CREATE TABLE role_permission (
-        role_id int4 NOT NULL,
-        permission_id int4 NOT NULL,
-        CONSTRAINT "PK_19a94c31d4960ded0dcd0397759" PRIMARY KEY (role_id, permission_id),
-        CONSTRAINT "FK_3d0a7155eafd75ddba5a7013368" FOREIGN KEY (role_id) REFERENCES "role"(id) ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT "FK_e3a3ba47b7ca00fd23be4ebd6cf" FOREIGN KEY (permission_id) REFERENCES "permission"(id) ON DELETE CASCADE ON UPDATE CASCADE
+      CREATE TABLE IF NOT EXISTS role_permission (
+        role_id INTEGER NOT NULL,
+        permission_id INTEGER NOT NULL,
+        PRIMARY KEY (role_id, permission_id),
+        CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_permission FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE ON UPDATE CASCADE
       );
-      CREATE INDEX "IDX_3d0a7155eafd75ddba5a701336" ON role_permission USING btree (role_id);
-      CREATE INDEX "IDX_e3a3ba47b7ca00fd23be4ebd6c" ON role_permission USING btree (permission_id);
+    `);
+    // Create indexes
+    await queryRunner.query(`
+      CREATE INDEX IF NOT EXISTS idx_role_permission_role_id ON role_permission (role_id);
+    `);
+    await queryRunner.query(`
+      CREATE INDEX IF NOT EXISTS idx_role_permission_permission_id ON role_permission (permission_id);
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      DROP TABLE \"role_permission\"
+      DROP TABLE IF EXISTS role_permission;
     `);
     await queryRunner.query(`
-      DROP TABLE \"role\"
+      DROP TABLE IF EXISTS role;
     `);
     await queryRunner.query(`
-      DROP TYPE "role_status_enum";
+      DROP TYPE IF EXISTS role_status_enum;
     `);
     await queryRunner.query(`
-      DROP TYPE "role_type_enum";
+      DROP TYPE IF EXISTS role_type_enum;
     `);
   }
 }

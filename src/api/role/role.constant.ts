@@ -18,15 +18,20 @@ export enum RoleStatus {
   INACTIVE = 2,
 }
 
+export enum RoleName {
+  Administrator = 'Administrator',
+  UserManager = 'User Manager',
+  User = 'User',
+}
+
 export const ROLES_DEFAULT = [
   {
-    name: 'Administrator',
+    name: RoleName.Administrator,
     permissions: [PERMISSIONS.ALL],
-    isSuperAdmin: true,
     type: RoleTypes.Admin,
   },
   {
-    name: 'User Manager',
+    name: RoleName.UserManager,
     permissions: Object.values([
       PERMISSIONS.USER_READ,
       PERMISSIONS.USER_CREATE,
@@ -36,7 +41,7 @@ export const ROLES_DEFAULT = [
     type: RoleTypes.Admin,
   },
   {
-    name: 'User',
+    name: RoleName.User,
     permissions: [PERMISSIONS.USER_READ],
     type: RoleTypes.User,
   },

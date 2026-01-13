@@ -6,26 +6,27 @@ import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { MOCK_USER_WITH_ROLE } from '../user/user.constant';
+import { RoleEntity } from '../role/role.entity';
+
+const MOCK_USER_RESPONSE = Promise.resolve({
+  ...MOCK_USER_WITH_ROLE,
+  password: '$2b$12$VaegMcM07WIGh5ePNKydPuURhhzr6F5rFfuBz2BtkO.Ut.1PNDRbK',
+  save: () => true,
+});
 
 describe('AuthService', () => {
   let authService: AuthService;
   const mockedRepo = {
-    findOne: jest.fn((id) =>
-      Promise.resolve({
-        ...MOCK_USER_WITH_ROLE,
-        password:
-          '$2b$12$VaegMcM07WIGh5ePNKydPuURhhzr6F5rFfuBz2BtkO.Ut.1PNDRbK',
-        save: () => true,
-      }),
-    ),
-    save: jest.fn((id) => Promise.resolve(true)),
+    findOne: jest.fn(() => Promise.resolve(MOCK_USER_RESPONSE)),
+    save: jest.fn(() => Promise.resolve(true)),
   };
   const mockUserService = {
-    setCurrentRefreshToken: jest.fn((t: string) => Promise.resolve(true)),
-    removeRefreshToken: jest.fn((id: string) => Promise.resolve(true)),
+    getByEmail: jest.fn(() => Promise.resolve(MOCK_USER_RESPONSE)),
+    setCurrentRefreshToken: jest.fn(() => Promise.resolve(true)),
+    removeRefreshToken: jest.fn(() => Promise.resolve(true)),
   };
   const mockJwtService = {
-    signAsync: jest.fn((t: string) => Promise.resolve('xxx')),
+    signAsync: jest.fn(() => Promise.resolve('xxx')),
   };
 
   beforeEach(async () => {
@@ -34,6 +35,10 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: getRepositoryToken(UserEntity),
+          useValue: mockedRepo,
+        },
+        {
+          provide: getRepositoryToken(RoleEntity),
           useValue: mockedRepo,
         },
         {

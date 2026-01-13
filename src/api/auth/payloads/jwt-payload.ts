@@ -1,11 +1,11 @@
-import { IRole } from '../../role/role.interface';
+import { RoleEntity } from 'src/api/role/role.entity';
 
 export interface JwtPayload {
   sub: string;
   email: string;
   fullName: string;
   iat?: string;
-  roles?: IRole[];
+  role?: RoleEntity;
 }
 
 export interface JwtRefreshTokenPayload {

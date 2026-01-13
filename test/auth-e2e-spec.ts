@@ -24,7 +24,7 @@ describe('Auth', () => {
     }),
   };
   const mockedRepo = {
-    findOne: jest.fn((id) =>
+    findOne: jest.fn(() =>
       Promise.resolve({
         ...MOCK_USER_WITH_ROLE,
         password:
@@ -32,11 +32,11 @@ describe('Auth', () => {
         save: () => true,
       }),
     ),
-    save: jest.fn((id) => Promise.resolve(true)),
+    save: jest.fn(() => Promise.resolve(true)),
   };
 
   const mockUserService = {
-    setCurrentRefreshToken: jest.fn((token: string) => Promise.resolve(true)),
+    setCurrentRefreshToken: jest.fn(() => Promise.resolve(true)),
   };
 
   beforeAll(async () => {

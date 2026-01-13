@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,12 +15,17 @@ import { ERROR_AUTH } from './auth.constant';
 import { UserEntity } from '../user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SignUpDto } from './dto/signup.dto';
+import { RoleEntity } from '../role/role.entity';
+import { RoleStatus, RoleTypes } from '../role/role.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
@@ -48,7 +54,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       fullName: user.name,
-      roles: user?.roles,
+      role: user?.role,
     };
 
     return {
@@ -60,19 +66,48 @@ export class AuthService {
     };
   }
 
+  async checkExistsUserByEmail(email: string) {
+    const user = await this.userRepository.findOneBy({
+      email: email?.toLowerCase(),
+    });
+
+    if (!user) return true;
+
+    throw new NotFoundException(ERROR_AUTH.USER_NAME_EXISTED.MESSAGE);
+  }
+
+  async signUp(data: SignUpDto): Promise<unknown> {
+    await this.checkExistsUserByEmail(data.email);
+    const passwordHash = await bcrypt.hash(
+      data.password,
+      JWT_CONFIG.SALT_ROUNDS,
+    );
+    const role = await this.roleRepository.findOneBy({
+      type: RoleTypes.User,
+      status: RoleStatus.ACTIVE,
+    });
+
+    const uModel = new UserEntity();
+    uModel.email = data.email.toLowerCase();
+    uModel.password = passwordHash;
+    uModel.name = data.name;
+    uModel.role = role;
+    if (data.phone) {
+      uModel.phone = data.phone;
+    }
+    return this.userRepository.save(uModel);
+  }
+
   async login(loginDto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = loginDto;
-    const user = await this.userRepository.findOne({
-      where: {
-        email,
-      },
-      relations: ['roles'],
-    });
+    const user = await this.userService.getByEmail(email);
 
     const isRightPassword = bcrypt.compareSync(password, user?.password);
     if (!user || !isRightPassword) {
       throw new BadRequestException(ERROR_AUTH.PASSWORD_INCORRECT.MESSAGE);
     }
+
+    user.lastLogin = new Date();
 
     await user.save();
 
@@ -87,7 +122,7 @@ export class AuthService {
       where: {
         id,
       },
-      relations: ['roles'],
+      relations: ['role.permissions'],
     });
     return this.generateTokenResponse(user);
   }

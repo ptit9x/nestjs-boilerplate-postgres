@@ -17,7 +17,8 @@ export interface IUserPayload {
   createdAt?: string;
   updatedAt?: string;
   lastLogin: string;
-  roles?: IRole[];
+  roleId: number;
+  role?: IRole;
 }
 
 export interface IPaginateParams {

@@ -1,5 +1,3 @@
-import { UserStatus } from './user.constant';
-
 export interface ICreateUser {
   name: string;
   email: string;

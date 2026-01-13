@@ -3,7 +3,6 @@ import { DATABASE_CONFIG } from './constant.config';
 import { PermissionEntity } from '../api/permission/permission.entity';
 import { RoleEntity } from '../api/role/role.entity';
 import { UserEntity } from '../api/user/user.entity';
-import { OrganizationEntity } from '../api/organization/organization.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -12,7 +11,7 @@ export default new DataSource({
   username: DATABASE_CONFIG.username,
   password: DATABASE_CONFIG.password,
   database: DATABASE_CONFIG.database,
-  entities: [PermissionEntity, RoleEntity, UserEntity, OrganizationEntity],
+  entities: [PermissionEntity, RoleEntity, UserEntity],
   migrations: [__dirname + '/../../migrations/*.ts'],
   synchronize: false,
   logging: DATABASE_CONFIG.logging,

@@ -1,16 +1,8 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UserStatus, USER_CONST } from './user.constant';
 import { BaseEntity } from '../../share/database/base.entity';
 import { RoleEntity } from '../role/role.entity';
-import { OrganizationEntity } from '../organization/organization.entity';
 @Entity({ name: USER_CONST.MODEL_NAME })
 export class UserEntity extends BaseEntity {
   @Column({ length: 255, unique: true })
@@ -32,24 +24,24 @@ export class UserEntity extends BaseEntity {
   @Column({ length: 14, nullable: true })
   phone: string;
 
+  @Column({ length: 255, name: 'user_agent', nullable: true })
+  userAgent: string;
+
+  @Column({ length: 1000, nullable: true })
+  avatar: string;
+
+  @Column({ length: 255, name: 'ip_address', nullable: true })
+  ipAddress: string;
+
   @Column({ type: 'timestamp', name: 'last_login', nullable: true })
   lastLogin: Date;
 
-  @ManyToMany(() => RoleEntity)
-  @JoinTable({
-    name: 'user_role', // user_roles_role: user has a lot of role
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'role_id' },
-  })
-  roles: RoleEntity[];
+  @Column({ type: 'bigint', name: 'role_id' })
+  roleId: string;
 
-  @ManyToMany(() => OrganizationEntity)
-  @JoinTable({
-    name: 'user_organization', // user_users_organization: user has a lot of organization
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'organization_id' },
-  })
-  organizations: OrganizationEntity[];
+  @ManyToOne(() => RoleEntity, (role) => role.users)
+  @JoinColumn([{ name: 'role_id', referencedColumnName: 'id' }])
+  role: RoleEntity;
 
   @Column({
     name: 'current_hashed_refresh_token',
